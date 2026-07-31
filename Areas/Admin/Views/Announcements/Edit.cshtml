@@ -1,0 +1,3 @@
+@model AnnouncementFormViewModel
+@{ViewData["Title"]="Duyuruyu Düzenle";}
+<div class="page-heading"><div><span>Duyuru yönetimi</span><h1>Duyuruyu Düzenle</h1><p>İçeriği, hedef kitleyi ve yayın tarihlerini güncelleyin.</p></div></div><form method="post" enctype="multipart/form-data" class="admin-form"><input asp-for="Announcement.Id" type="hidden"/><input asp-for="Announcement.CreatedAt" type="hidden"/><div asp-validation-summary="ModelOnly" class="text-danger"></div><section class="form-card"><partial name="_Form" model="Model"/></section><div class="form-actions"><a class="admin-btn" asp-action="Index">Vazgeç</a><button class="admin-btn primary">Değişiklikleri Kaydet</button></div></form>

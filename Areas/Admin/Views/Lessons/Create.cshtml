@@ -1,0 +1,4 @@
+@model LessonFormViewModel
+@{ViewData["Title"]="Yeni Ders";}
+<div class="page-heading"><div><span>Ders yönetimi</span><h1>Yeni Ders Planla</h1><p>Ders zamanını, biçimini ve katılacak öğrencileri belirleyin.</p></div></div><form method="post" class="admin-form"><section class="form-card"><partial name="_Form" model="Model"/></section><div class="form-actions"><a class="admin-btn" asp-action="Index">Vazgeç</a><button class="admin-btn primary" type="submit">Dersi Oluştur</button></div></form>
+@section Scripts { <partial name="_ValidationScriptsPartial"/> }

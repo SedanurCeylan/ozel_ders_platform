@@ -1,0 +1,28 @@
+@model IReadOnlyList<Lesson>
+@{ ViewData["Title"] = "Takvim ve Dersler"; }
+
+<div class="page-heading">
+    <div><span>Ders yönetimi</span><h1>Takvim ve Dersler</h1><p>Planlanan, tamamlanan ve iptal edilen dersleri yönetin.</p></div>
+    <a class="admin-btn primary" asp-action="Create">+ Yeni ders</a>
+</div>
+<div class="filter-row">
+    <a class="@(ViewBag.Scope == "upcoming" ? "active" : "")" asp-action="Index" asp-route-scope="upcoming">Yaklaşan</a>
+    <a class="@(ViewBag.Scope == "today" ? "active" : "")" asp-action="Index" asp-route-scope="today">Bugün</a>
+    <a class="@(ViewBag.Scope == "past" ? "active" : "")" asp-action="Index" asp-route-scope="past">Geçmiş</a>
+</div>
+<div class="lesson-admin-list">
+    @if (Model.Count == 0) { <div class="empty-state">Bu görünümde ders bulunmuyor.</div> }
+    @foreach (var lesson in Model)
+    {
+        <article>
+            <time><strong>@lesson.StartDate.ToString("dd")</strong><small>@lesson.StartDate.ToString("MMM")</small></time>
+            <div class="lesson-main">
+                <span>@lesson.StartDate.ToString("HH:mm")–@lesson.EndDate.ToString("HH:mm") · @lesson.LessonMode.ToTurkish()</span>
+                <h2>@lesson.Title</h2>
+                <p>@string.Join(", ", lesson.StudentLessons.Select(x => x.StudentProfile.FullName))</p>
+            </div>
+            <span class="status-pill on">@lesson.Status.ToTurkish()</span>
+            <div class="lesson-actions"><a asp-action="Details" asp-route-id="@lesson.Id">Detay</a><a asp-action="Edit" asp-route-id="@lesson.Id">Düzenle</a></div>
+        </article>
+    }
+</div>

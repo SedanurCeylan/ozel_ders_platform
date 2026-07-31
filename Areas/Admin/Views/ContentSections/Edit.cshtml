@@ -1,0 +1,5 @@
+@model ContentSection
+@{ ViewData["Title"] = "İçerik Düzenle"; }
+<div class="page-heading"><div><span>@Model.PageKey / @Model.SectionKey</span><h1>İçeriği Düzenle</h1><p>Başlık, metin, sıra ve yayın durumunu güncelleyin.</p></div></div>
+<form method="post" class="admin-form"><input asp-for="Id" type="hidden" /><input asp-for="CreatedAt" type="hidden" /><section class="form-card"><partial name="_Form" model="Model" /></section><div class="form-actions"><a class="admin-btn" asp-action="Index">Vazgeç</a><button class="admin-btn primary" type="submit">Değişiklikleri Kaydet</button></div></form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

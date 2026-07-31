@@ -1,0 +1,96 @@
+﻿@using Microsoft.EntityFrameworkCore
+@inject OzelDersYonetim.Data.ApplicationDbContext LayoutDb
+@{
+    var visibleDiscoverySections = await LayoutDb.ContentSections.AsNoTracking()
+        .Where(x => x.PageKey == "Home" && x.IsActive && (x.SectionKey == "section-demo" || x.SectionKey == "section-content"))
+        .Select(x => x.SectionKey)
+        .ToListAsync();
+    var demoSectionIsActive = visibleDiscoverySections.Contains("section-demo");
+    var contentSectionIsActive = visibleDiscoverySections.Contains("section-content");
+    var layoutSettings = await LayoutDb.SiteSettings.AsNoTracking().SingleAsync();
+}
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Öğrenciye özel matematik dersleri, ödev takibi ve gelişim desteği." />
+    <title>@ViewData["Title"] | @layoutSettings.SiteName</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon-sigma.svg" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/games.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home-features.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/discovery.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/daily-facts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/testimonials.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/OzelDersYonetim.styles.css" asp-append-version="true" />
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg site-nav" aria-label="Ana menü">
+            <div class="container">
+                <a class="navbar-brand brand-mark" asp-area="" asp-controller="Home" asp-action="Index" aria-label="@layoutSettings.SiteName ana sayfa">
+                    <span class="brand-symbol">∑</span>
+                    <span>@layoutSettings.SiteName</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Menüyü aç veya kapat">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse justify-content-end">
+                    <ul class="navbar-nav align-items-lg-center site-menu">
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="About">Hakkımda</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Trainings">Eğitimler</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="SecondaryEducation">Sınıflar</a>
+                        </li>
+                        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Keşfet</a><ul class="dropdown-menu"><li><a class="dropdown-item" asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a></li>@if(demoSectionIsActive){<li><a class="dropdown-item" asp-controller="Discovery" asp-action="DemoLessons">Demo Dersler</a></li>}@if(contentSectionIsActive){<li><a class="dropdown-item" asp-controller="Discovery" asp-action="Content">Matematik İçerikleri</a></li>}<li><a class="dropdown-item" asp-controller="Discovery" asp-action="Documents">Ücretsiz Dokümanlar</a></li><li><a class="dropdown-item" asp-controller="LevelTest" asp-action="Index">Mini Seviye Testi</a></li></ul></li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="iletisim">İletişim</a>
+                        </li>
+                    </ul>
+                    <partial name="_LoginPartial" />
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="page-shell">
+        <span class="math-symbol math-symbol-one" aria-hidden="true">π</span>
+        <span class="math-symbol math-symbol-two" aria-hidden="true">√</span>
+        <span class="math-symbol math-symbol-three" aria-hidden="true">x²</span>
+        <span class="math-symbol math-symbol-four" aria-hidden="true">∞</span>
+        <main role="main">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="container footer-grid">
+            <div>
+                <a class="footer-brand" asp-controller="Home" asp-action="Index"><span>∑</span> @layoutSettings.SiteName</a>
+                <p>Her öğrencinin öğrenme yolculuğuna özel, anlaşılır ve sürdürülebilir matematik desteği.</p>
+            </div>
+            <div class="footer-links">
+                <a asp-controller="Home" asp-action="About">Hakkımda</a>
+                <a asp-controller="Home" asp-action="Trainings">Eğitimler</a>
+                <a asp-controller="Home" asp-action="SecondaryEducation">Sınıflar</a>
+                <a asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a>
+                <a asp-controller="Home" asp-action="Index" asp-fragment="iletisim">İletişim</a>
+            </div>
+            <p class="footer-copy">© @DateTime.Today.Year @layoutSettings.SiteName</p>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

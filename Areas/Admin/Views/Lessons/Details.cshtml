@@ -1,0 +1,30 @@
+@model Lesson
+@{ ViewData["Title"] = "Ders Ayrıntıları"; }
+
+<div class="page-heading">
+    <div><span>@Model.StartDate.ToString("dd MMMM yyyy · HH:mm")</span><h1>@Model.Title</h1><p>@Model.Subject · @Model.LessonMode.ToTurkish()</p></div>
+    <div><a class="admin-btn" asp-action="Index">← Liste</a> <a class="admin-btn primary" asp-action="Edit" asp-route-id="@Model.Id">Düzenle</a></div>
+</div>
+<div class="detail-grid">
+    <section class="admin-panel">
+        <div class="panel-head"><div><h2>Ders Bilgileri</h2></div></div>
+        <dl><dt>Başlangıç</dt><dd>@Model.StartDate.ToString("dd.MM.yyyy HH:mm")</dd><dt>Bitiş</dt><dd>@Model.EndDate.ToString("dd.MM.yyyy HH:mm")</dd><dt>Durum</dt><dd>@Model.Status.ToTurkish()</dd><dt>Açıklama</dt><dd>@(Model.Description ?? "—")</dd></dl>
+        @if (!string.IsNullOrWhiteSpace(Model.OnlineMeetingUrl)) { <a class="admin-btn primary lesson-link" href="@Model.OnlineMeetingUrl" target="_blank">Derse Katıl ↗</a> }
+    </section>
+    <section class="admin-panel"><div class="panel-head"><div><h2>Öğretmen Notları</h2></div></div><p>@(Model.TeacherNote ?? "Henüz not eklenmemiş.")</p><strong>Sonraki konu</strong><p>@(Model.NextLessonTopic ?? "—")</p></section>
+</div>
+<section class="attendance-section">
+    <div class="panel-head"><div><h2>Katılım ve Performans</h2><p>Her öğrenci için ayrı kayıt tutulur.</p></div></div>
+    @foreach (var item in Model.StudentLessons)
+    {
+        <form asp-action="UpdateAttendance" asp-route-id="@Model.Id" method="post" class="attendance-row">
+            <input type="hidden" name="studentLessonId" value="@item.Id"/>
+            <div class="student-cell"><span>@item.StudentProfile.FirstName[0]@item.StudentProfile.LastName[0]</span><div><strong>@item.StudentProfile.FullName</strong><small>@item.StudentProfile.GradeLevel</small></div></div>
+            <select name="attendanceStatus"><option value="Pending">Bekliyor</option><option value="Attended">Katıldı</option><option value="Absent">Katılmadı</option><option value="Excused">Mazeretli</option></select>
+            <input name="questionCount" type="number" min="0" value="@item.QuestionCount" placeholder="Soru sayısı"/>
+            <input name="performanceNote" value="@item.PerformanceNote" placeholder="Performans notu"/>
+            <button class="admin-btn" type="submit">Kaydet</button>
+        </form>
+    }
+</section>
+<form asp-action="Delete" asp-route-id="@Model.Id" method="post" class="danger-zone" onsubmit="return confirm('Bu ders iptal edilsin mi?');"><div><strong>Dersi iptal et</strong><p>Öğrenci ataması varsa kayıt korunarak durumu iptal edilir.</p></div><button type="submit">İptal Et</button></form>

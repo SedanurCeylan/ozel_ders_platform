@@ -1,0 +1,8 @@
+@model IReadOnlyList<Assignment>
+@{ ViewData["Title"] = "Ödevler"; }
+<div class="page-heading"><div><span>Ödev yönetimi</span><h1>Tüm Ödevler</h1><p>Ödevleri, teslimleri ve değerlendirmeleri yönetin.</p></div><a class="admin-btn primary" asp-action="Create">+ Yeni ödev</a></div>
+<div class="filter-row"><a class="@(ViewBag.Scope is null ? "active" : "")" asp-action="Index">Tümü</a><a class="@(ViewBag.Scope == "waiting" ? "active" : "")" asp-route-scope="waiting">Teslim bekleyenler</a><a class="@(ViewBag.Scope == "late" ? "active" : "")" asp-route-scope="late">Gecikenler</a><a class="@(ViewBag.Scope == "evaluated" ? "active" : "")" asp-route-scope="evaluated">Değerlendirilenler</a></div>
+<div class="table-card"><div class="responsive-table"><table><thead><tr><th>Ödev</th><th>Konu</th><th>Son teslim</th><th>Durum</th><th>Öğrenci</th><th>Teslim</th><th></th></tr></thead><tbody>
+@if (Model.Count == 0) { <tr><td colspan="7" class="empty-state">Bu görünümde ödev bulunmuyor.</td></tr> }
+@foreach (var item in Model) { <tr><td><strong>@item.Title</strong><small>@item.GradeLevel</small></td><td>@item.Subject</td><td>@item.DueDate.ToString("dd MMM yyyy HH:mm")</td><td><span class="status-pill on">@item.Status.ToTurkish()</span></td><td>@item.StudentAssignments.Count</td><td>@item.StudentAssignments.Count(x => x.Status == StudentAssignmentStatus.Submitted || x.Status == StudentAssignmentStatus.LateSubmitted)</td><td class="actions"><a asp-action="Details" asp-route-id="@item.Id">Detay</a></td></tr> }
+</tbody></table></div></div>

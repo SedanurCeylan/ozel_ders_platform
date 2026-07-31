@@ -1,0 +1,19 @@
+@{
+    var statusCode = (int)(ViewData["StatusCode"] ?? 500);
+    var notFound = statusCode == 404;
+}
+
+<section class="status-page">
+    <div class="container">
+        <div class="status-card">
+            <span class="status-number">@statusCode</span>
+            <div class="status-symbol" aria-hidden="true">@(notFound ? "∅" : "!")</div>
+            <h1>@(notFound ? "Aradığınız sayfayı bulamadık." : "Bu sayfaya şu anda ulaşılamıyor.")</h1>
+            <p>@(notFound ? "Bağlantı değişmiş, sayfa kaldırılmış veya adres yanlış yazılmış olabilir." : "İsteğiniz tamamlanamadı. Ana sayfaya dönüp yeniden deneyebilirsiniz.")</p>
+            <div class="status-actions">
+                <a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Index">Ana Sayfaya Dön →</a>
+                <button class="btn status-back" type="button" onclick="history.back()">Önceki Sayfaya Dön</button>
+            </div>
+        </div>
+    </div>
+</section>

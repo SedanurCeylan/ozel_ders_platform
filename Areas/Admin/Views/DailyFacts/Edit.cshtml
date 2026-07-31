@@ -1,0 +1,3 @@
+@model DailyFact
+@{ViewData["Title"]="Günün Bilgisini Düzenle";}<div class="page-heading"><div><span>@Model.Category</span><h1>Bilgiyi Düzenle</h1><p>Metni, sırasını ve yayın durumunu güncelleyin.</p></div></div><form method="post" class="admin-form"><section class="form-card"><partial name="_Form" model="Model"/></section><div class="form-actions"><a class="admin-btn" asp-action="Index">Vazgeç</a><button class="admin-btn primary">Değişiklikleri Kaydet</button></div></form>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

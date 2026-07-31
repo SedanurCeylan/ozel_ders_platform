@@ -1,0 +1,108 @@
+@using Microsoft.EntityFrameworkCore
+@inject OzelDersYonetim.Data.ApplicationDbContext AdminLayoutDb
+@{ var adminSiteSettings = await AdminLayoutDb.SiteSettings.AsNoTracking().SingleAsync(); }
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] | @adminSiteSettings.SiteName Yönetim</title>
+    <link rel="icon" type="image/svg+xml" href="~/favicon-sigma.svg" asp-append-version="true" />
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/lessons.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/assignments.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/progress.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/students-extra.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/student-detail.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/profile-images.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/email-logs.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/email-compose.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/games.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin-header-actions.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin-sidebar-scroll.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin-content-management.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/daily-facts.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/testimonials.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="admin-shell">
+        <aside class="admin-sidebar">
+            <a class="admin-brand" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><span>∑</span><div>@adminSiteSettings.SiteName<small>Yönetim Paneli</small></div></a>
+            <nav aria-label="Yönetim menüsü">
+                <span class="menu-label">Hızlı erişim</span>
+                <a class="nav-primary" asp-area="Admin" asp-controller="Dashboard" asp-action="Index"><span>⌂</span> Genel Bakış</a>
+                <a class="nav-primary" asp-area="Admin" asp-controller="Students" asp-action="Create"><span>＋</span> Yeni Öğrenci</a>
+                <a class="nav-primary" asp-area="Admin" asp-controller="Lessons" asp-action="Create"><span>◷</span> Yeni Ders Planla</a>
+
+                <span class="menu-label">Yönetim</span>
+                <details class="nav-group">
+                    <summary><span>♙</span><b>Öğrenciler</b><i>⌄</i></summary>
+                    <div><a asp-area="Admin" asp-controller="Students" asp-action="Index">Tüm Öğrenciler</a><a asp-area="Admin" asp-controller="Progress" asp-action="Index">Gelişim ve Denemeler</a></div>
+                </details>
+                <details class="nav-group">
+                    <summary><span>◷</span><b>Dersler ve Ödevler</b><i>⌄</i></summary>
+                    <div><a asp-area="Admin" asp-controller="Lessons" asp-action="Index">Takvim ve Dersler</a><a asp-area="Admin" asp-controller="Assignments" asp-action="Index">Tüm Ödevler</a><a asp-area="Admin" asp-controller="Assignments" asp-action="Create">Yeni Ödev Oluştur</a></div>
+                </details>
+                <details class="nav-group">
+                    <summary><span>▤</span><b>Dokümanlar</b><i>⌄</i></summary>
+                    <div><a asp-area="Admin" asp-controller="Documents" asp-action="Index">Tüm Dokümanlar</a><a asp-area="Admin" asp-controller="Documents" asp-action="Create">Yeni Doküman Yükle</a></div>
+                </details>
+                <details class="nav-group">
+                    <summary><span>◆</span><b>Oyunlar ve Testler</b><i>⌄</i></summary>
+                    <div><a asp-area="Admin" asp-controller="Games" asp-action="Index">Oyun Skorları</a><a asp-area="Admin" asp-controller="Games" asp-action="Questions">İşlem Arenası Soruları</a><a asp-area="Admin" asp-controller="LevelTestQuestions" asp-action="Index">Mini Test Soruları</a></div>
+                </details>
+                <details class="nav-group">
+                    <summary><span>⚙</span><b>Site Ayarları</b><i>⌄</i></summary>
+                    <div>
+                        <a asp-area="Admin" asp-controller="TeacherProfile" asp-action="Index">Öğretmen Bilgileri</a>
+                        <a asp-area="Admin" asp-controller="SiteSettings" asp-action="Index">Site Adı ve İletişim</a>
+                    </div>
+                </details>
+                <details class="nav-group nav-group-home">
+                    <summary><span>⌂</span><b>Ana Sayfa Yönetimi</b><i>⌄</i></summary>
+                    <div>
+                        <a asp-area="Admin" asp-controller="HomeHero" asp-action="Index">1 · Karşılama Alanı</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home">2 · Bölümleri Aç / Kapat</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="programs">3 · Program Kartları</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="process">4 · Ders Süreci Alanı</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="tracking">5 · Takip Sistemi Tanıtımı</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="statistics">6 · Başarı İstatistikleri</a>
+                    </div>
+                </details>
+                <details class="nav-group">
+                    <summary><span>✦</span><b>İçerik ve Paylaşımlar</b><i>⌄</i></summary>
+                    <div>
+                        <a asp-area="Admin" asp-controller="DailyFacts" asp-action="Index">Günün Matematik Bilgileri</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="demo">Demo Ders Videoları</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="articles">Matematik Yazıları</a>
+                        <a asp-area="Admin" asp-controller="ContentSections" asp-action="Index" asp-route-page="Home" asp-route-category="faq">Sık Sorulan Sorular</a>
+                        <a asp-area="Admin" asp-controller="Testimonials" asp-action="Index">Öğrenci Yorum Onayları</a>
+                        <a asp-area="Admin" asp-controller="ClassContents" asp-action="Index">Sınıf Konuları</a>
+                    </div>
+                </details>
+                <details class="nav-group">
+                    <summary><span>◉</span><b>İletişim ve Kayıtlar</b><i>⌄</i></summary>
+                    <div><a asp-area="Admin" asp-controller="Announcements" asp-action="Index">Duyurular</a><a asp-area="Admin" asp-controller="EmailLogs" asp-action="Index">E-posta Geçmişi</a><a asp-area="Admin" asp-controller="AuditLogs" asp-action="Index">İşlem Geçmişi</a></div>
+                </details>
+                <a class="view-public-link" asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener"><span>↗</span> Siteyi Görüntüle</a>
+            </nav>
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post" class="sidebar-logout"><button type="submit"><span>⇥</span> Çıkış Yap</button></form>
+        </aside>
+        <div class="admin-main">
+            <header class="admin-header"><div><button class="sidebar-toggle" type="button" aria-label="Menüyü aç veya daralt" aria-expanded="true" data-sidebar-toggle>☰</button><span>Yönetim Paneli</span></div><div class="admin-header-actions"><a class="view-site-btn" asp-area="" asp-controller="Home" asp-action="Index" target="_blank" rel="noopener">Siteye Git ↗</a><div class="admin-user"><span class="avatar">Ö</span><div><strong>Öğretmen</strong><small>Admin</small></div></div></div></header>
+            <main class="admin-content">
+                @if (TempData["Success"] is string success)
+                {
+                    <div class="admin-alert" role="status">✓ @success</div>
+                }
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/admin-sidebar.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

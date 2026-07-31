@@ -1,0 +1,3 @@
+@model AnnouncementFormViewModel
+@{ViewData["Title"]="Yeni Duyuru";}
+<div class="page-heading"><div><span>Duyuru yönetimi</span><h1>Yeni Duyuru</h1><p>Hedef öğrencileri belirleyip duyuruyu yayınlayın.</p></div></div><form method="post" enctype="multipart/form-data" class="admin-form"><div asp-validation-summary="ModelOnly" class="text-danger"></div><section class="form-card"><partial name="_Form" model="Model"/></section><div class="form-actions"><a class="admin-btn" asp-action="Index">Vazgeç</a><button class="admin-btn primary">Duyuruyu Yayınla</button></div></form>

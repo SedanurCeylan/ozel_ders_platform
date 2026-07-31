@@ -1,0 +1,3 @@
+@model IReadOnlyList<UserNotification>
+@{ViewData["Title"]="Bildirimler";}
+<div class="student-page-title"><span>Bildirim merkezi</span><h1>Bildirimlerim</h1><p>Ödev, ders ve duyuru bildirimlerinizi takip edin.</p></div><form asp-action="MarkAllRead" method="post" class="notification-actions"><button>Tümünü okundu işaretle</button></form><div class="notification-list">@if(Model.Count==0){<div class="student-empty">Henüz bildiriminiz bulunmuyor.</div>}@foreach(var item in Model){<a class="@(item.IsRead?"read":"unread")" asp-action="Open" asp-route-id="@item.Id"><span>@(item.IsRead?"○":"●")</span><div><small>@item.NotificationType · @item.CreatedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</small><h2>@item.Title</h2><p>@item.Message</p></div><b>→</b></a>}</div>

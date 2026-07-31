@@ -1,0 +1,3 @@
+@model IReadOnlyList<Announcement>
+@{ViewData["Title"]="Duyurular";}
+<div class="student-page-title"><span>Öğretmenimden</span><h1>Duyurular</h1><p>Güncel bilgilendirmeleri ve hatırlatmaları okuyun.</p></div><div class="announcement-list">@if(Model.Count==0){<div class="student-empty">Aktif duyuru bulunmuyor.</div>}@foreach(var item in Model){<a asp-action="Details" asp-route-id="@item.Id"><small>@item.PublishDate.ToString("dd MMMM yyyy")</small><h2>@item.Title</h2><p>@(item.Content.Length>180?item.Content[..180]+"…":item.Content)</p><b>Devamını oku →</b></a>}</div>

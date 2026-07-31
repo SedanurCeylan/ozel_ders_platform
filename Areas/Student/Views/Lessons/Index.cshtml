@@ -1,0 +1,19 @@
+@model IReadOnlyList<StudentLesson>
+@{ ViewData["Title"] = "Derslerim"; }
+
+<div class="student-page-title"><span>Takvim</span><h1>Derslerim</h1><p>Yaklaşan ve geçmiş derslerinizi görüntüleyin.</p></div>
+<div class="student-filter">
+    <a class="@(ViewBag.Scope == "upcoming" ? "active" : "")" asp-route-scope="upcoming">Yaklaşan dersler</a>
+    <a class="@(ViewBag.Scope == "past" ? "active" : "")" asp-route-scope="past">Geçmiş dersler</a>
+</div>
+<div class="student-lesson-list">
+    @if (Model.Count == 0) { <div class="student-empty">Bu görünümde ders bulunmuyor.</div> }
+    @foreach (var item in Model)
+    {
+        <a asp-action="Details" asp-route-id="@item.Id">
+            <time><strong>@item.Lesson.StartDate.ToString("dd")</strong><small>@item.Lesson.StartDate.ToString("MMM")</small></time>
+            <div><span>@item.Lesson.StartDate.ToString("HH:mm")–@item.Lesson.EndDate.ToString("HH:mm")</span><h2>@item.Lesson.Title</h2><p>@item.Lesson.Subject · @item.Lesson.LessonMode.ToTurkish()</p></div>
+            <b>→</b>
+        </a>
+    }
+</div>

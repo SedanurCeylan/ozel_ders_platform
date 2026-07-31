@@ -1,0 +1,6 @@
+﻿@model ErrorViewModel
+@{
+    ViewData["Title"] = "Hata";
+}
+
+<section class="status-page"><div class="container"><div class="status-card"><span class="status-number">HATA</span><div class="status-symbol" aria-hidden="true">!</div><h1>Beklenmeyen bir sorun oluştu.</h1><p>İsteğiniz tamamlanamadı. Lütfen kısa bir süre sonra yeniden deneyin.</p>@if(Model.ShowRequestId){<small>Destek kodu: <code>@Model.RequestId</code></small>}<div class="status-actions"><a class="btn btn-primary btn-lg" asp-controller="Home" asp-action="Index">Ana Sayfaya Dön →</a><button class="btn status-back" type="button" onclick="history.back()">Önceki Sayfaya Dön</button></div></div></div></section>

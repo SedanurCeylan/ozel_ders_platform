@@ -1,0 +1,40 @@
+@model PublicSiteViewModel
+@{
+    ViewData["Title"] = "Hakkımda";
+    var s = Model.Settings;
+    var professionalTitle = Model.Find("teacher-title")?.Content ?? "Matematik Öğretmeni";
+    var education = Model.Find("teacher-education")?.Content ?? "Eğitim bilgisi yakında eklenecek.";
+    var experience = Model.Find("teacher-experience")?.Content ?? "Deneyim ve uzmanlık bilgisi yakında eklenecek.";
+    var lessonFormat = Model.Find("teacher-format")?.Content ?? "Birebir matematik dersleri";
+    var approach = Model.Find("approach");
+    var values = new[] { Model.Find("patience"), Model.Find("clarity"), Model.Find("continuity") }.Where(x => x is not null).ToList();
+}
+<section class="teacher-about-hero">
+    <div class="container teacher-about-grid">
+        <div class="teacher-identity-card">
+            <div class="teacher-monogram">@string.Concat(s.TeacherName.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(x => x[0]))</div>
+            <span>ÖĞRETMENİNİZİ TANIYIN</span>
+            <h1>@s.TeacherName</h1>
+            <strong>@professionalTitle</strong>
+            <p>@s.AboutDescription</p>
+            <a class="btn btn-primary" asp-action="Index" asp-fragment="iletisim">Tanışma Görüşmesi İste →</a>
+        </div>
+        <div class="teacher-profile-story">
+            <span class="eyebrow"><span></span> Hakkımda</span>
+            <h2>@s.AboutTitle</h2>
+            <div class="teacher-facts">
+                <article><i>01</i><div><small>EĞİTİM</small><p>@education</p></div></article>
+                <article><i>02</i><div><small>DENEYİM VE UZMANLIK</small><p>@experience</p></div></article>
+                <article><i>03</i><div><small>DERS BİÇİMİ</small><p>@lessonFormat</p></div></article>
+            </div>
+        </div>
+    </div>
+</section>
+@if (approach is not null)
+{
+    <section class="section teacher-approach"><div class="container"><div class="teacher-approach-copy"><span>@approach.Subtitle</span><h2>@approach.Title</h2><p>@approach.Content</p></div><blockquote><span>“</span><p>@(Model.Find("quote")?.Content ?? "Her öğrenci doğru yöntem ve düzenli çalışmayla ilerleyebilir.")</p><footer>@s.TeacherName</footer></blockquote></div></section>
+}
+@if (values.Count > 0)
+{
+    <section class="section teacher-values"><div class="container"><div class="home-section-head"><span>DERS ANLAYIŞIM</span><h2>Öğrencilerimle çalışırken önemsediğim değerler</h2></div><div class="teacher-value-grid">@foreach (var item in values){<article><span>✓</span><h3>@item!.Title</h3><p>@item.Content</p></article>}</div></div></section>
+}

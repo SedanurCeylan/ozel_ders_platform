@@ -1,0 +1,15 @@
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using OzelDersYonetim.Data;
+using OzelDersYonetim.Models.Content;
+using OzelDersYonetim.Models.ViewModels;
+namespace OzelDersYonetim.Areas.Admin.Controllers;
+[Area("Admin"),Authorize(Roles=IdentityDataSeeder.AdminRole)]
+public class HomeHeroController(ApplicationDbContext db):Controller
+{
+ public async Task<IActionResult> Index(){var s=await db.SiteSettings.AsNoTracking().SingleAsync();var items=await db.ContentSections.AsNoTracking().Where(x=>x.PageKey=="Home").ToDictionaryAsync(x=>x.SectionKey);return View(new HomeHeroViewModel{Eyebrow=Get(items,"section-hero",x=>x.Subtitle,"Kişiye özel matematik eğitimi"),Title=s.HeroTitle,Description=s.HeroDescription,TopicLabel=Get(items,"hero-topic",x=>x.Title,"Bugünün konusu"),Formula=Get(items,"hero-topic",x=>x.Content,"x² − 5x + 6 = 0"),Solution=Get(items,"hero-solution",x=>x.Title,"(x − 2)(x − 3) = 0"),Result=Get(items,"hero-solution",x=>x.Content,"x = 2 veya x = 3"),ProgressValue=Get(items,"hero-progress",x=>x.Title,"+24%"),ProgressLabel=Get(items,"hero-progress",x=>x.Content,"Net gelişimi"),StatOneValue=Get(items,"hero-stat-1",x=>x.Title,"1:1"),StatOneLabel=Get(items,"hero-stat-1",x=>x.Content,"Birebir ilgi"),StatTwoValue=Get(items,"hero-stat-2",x=>x.Title,"%100"),StatTwoLabel=Get(items,"hero-stat-2",x=>x.Content,"Kişisel plan"),StatThreeValue=Get(items,"hero-stat-3",x=>x.Title,"5–8"),StatThreeLabel=Get(items,"hero-stat-3",x=>x.Content,"Sınıf düzeyi")});}
+ [HttpPost,ValidateAntiForgeryToken]public async Task<IActionResult> Index(HomeHeroViewModel m){if(!ModelState.IsValid)return View(m);var s=await db.SiteSettings.SingleAsync();s.HeroTitle=m.Title.Trim();s.HeroDescription=m.Description.Trim();s.UpdatedAt=DateTime.UtcNow;var hero=await db.ContentSections.SingleAsync(x=>x.PageKey=="Home"&&x.SectionKey=="section-hero");hero.Subtitle=m.Eyebrow.Trim();hero.UpdatedAt=DateTime.UtcNow;await Save("hero-topic",m.TopicLabel,m.Formula,101);await Save("hero-solution",m.Solution,m.Result,102);await Save("hero-progress",m.ProgressValue,m.ProgressLabel,103);await Save("hero-stat-1",m.StatOneValue,m.StatOneLabel,104);await Save("hero-stat-2",m.StatTwoValue,m.StatTwoLabel,105);await Save("hero-stat-3",m.StatThreeValue,m.StatThreeLabel,106);await db.SaveChangesAsync();TempData["Success"]="Ana sayfa karşılama alanı güncellendi.";return RedirectToAction(nameof(Index));}
+ private async Task Save(string key,string title,string content,int order){var x=await db.ContentSections.SingleOrDefaultAsync(i=>i.PageKey=="Home"&&i.SectionKey==key);if(x is null){x=new ContentSection{PageKey="Home",SectionKey=key,CreatedAt=DateTime.UtcNow};db.Add(x);}x.Title=title.Trim();x.Content=content.Trim();x.DisplayOrder=order;x.IsActive=true;x.UpdatedAt=DateTime.UtcNow;}
+ private static string Get(IReadOnlyDictionary<string,ContentSection> d,string key,Func<ContentSection,string?> selector,string fallback)=>d.TryGetValue(key,out var x)&&!string.IsNullOrWhiteSpace(selector(x))?selector(x)!:fallback;
+}

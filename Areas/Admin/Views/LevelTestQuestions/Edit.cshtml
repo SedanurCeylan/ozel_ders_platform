@@ -1,0 +1,4 @@
+@model GameQuestion
+@{ViewData["Title"]="Mini Test Sorusunu Düzenle";}
+<div class="page-heading"><div><span>@Model.GradeLevel. sınıf · @Model.Topic</span><h1>Soruyu Düzenle</h1><p>Soru metnini, seçenekleri ve doğru cevabı güncelleyin.</p></div></div><form method="post" class="admin-form"><section class="form-card"><partial name="_Form" model="Model"/></section><div class="form-actions"><a class="admin-btn" asp-action="Index" asp-route-grade="@Model.GradeLevel">Vazgeç</a><button class="admin-btn primary">Değişiklikleri Kaydet</button></div></form>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

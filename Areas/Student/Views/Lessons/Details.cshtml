@@ -1,0 +1,25 @@
+@model StudentLesson
+@{ ViewData["Title"] = "Ders Ayrıntıları"; }
+
+<div class="student-page-title"><span>@Model.Lesson.StartDate.ToString("dd MMMM yyyy · HH:mm")</span><h1>@Model.Lesson.Title</h1><p>@Model.Lesson.Subject</p></div>
+<div class="student-grid">
+    <section>
+        <h2>Ders bilgileri</h2>
+        <dl>
+            <dt>Başlangıç</dt><dd>@Model.Lesson.StartDate.ToString("dd.MM.yyyy HH:mm")</dd>
+            <dt>Bitiş</dt><dd>@Model.Lesson.EndDate.ToString("dd.MM.yyyy HH:mm")</dd>
+            <dt>Biçim</dt><dd>@Model.Lesson.LessonMode.ToTurkish()</dd>
+            <dt>Durum</dt><dd>@Model.Lesson.Status.ToTurkish()</dd>
+        </dl>
+        <p>@Model.Lesson.Description</p>
+        @if (Model.Lesson.LessonMode == LessonMode.Online && !string.IsNullOrWhiteSpace(Model.Lesson.OnlineMeetingUrl))
+        {
+            <a class="join-lesson" href="@Model.Lesson.OnlineMeetingUrl" target="_blank">Çevrim içi derse katıl ↗</a>
+        }
+    </section>
+    <aside>
+        <h2>Katılım sonucum</h2>
+        <dl><dt>Katılım</dt><dd>@Model.AttendanceStatus.ToTurkish()</dd><dt>Çözülen soru</dt><dd>@(Model.QuestionCount?.ToString() ?? "—")</dd></dl>
+        <p>@(Model.PerformanceNote ?? "Ders tamamlandıktan sonra öğretmen geri bildirimi burada görünecek.")</p>
+    </aside>
+</div>

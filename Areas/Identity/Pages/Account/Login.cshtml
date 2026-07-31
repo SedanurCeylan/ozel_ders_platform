@@ -1,0 +1,41 @@
+@page
+@using Microsoft.EntityFrameworkCore
+@inject OzelDersYonetim.Data.ApplicationDbContext LoginDb
+@model OzelDersYonetim.Areas.Identity.Pages.Account.LoginModel
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<section class="login-section">
+    <div class="login-wrap">
+        <div class="login-intro">
+            <span class="eyebrow light"><span></span> @((await LoginDb.SiteSettings.AsNoTracking().SingleAsync()).SiteName)</span>
+            <h1>Öğrenme yolculuğuna kaldığın yerden devam et.</h1>
+            <p>Ödevlerini, ders programını ve gelişimini tek bir yerden takip etmek için hesabına giriş yap.</p>
+            <div class="login-formula" aria-hidden="true"><span>f(x)</span><strong>=</strong><span>gelişim</span></div>
+        </div>
+        <div class="login-card">
+            <div class="login-card-head"><span class="login-symbol">∑</span><div><small>Hoş geldin</small><h2>Hesabına giriş yap</h2></div></div>
+            <p class="login-help">Size tanımlanan e-posta adresi ve şifreyi kullanın.</p>
+            <form method="post">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" class="login-validation" role="alert"></div>
+                <div class="login-field">
+                    <label asp-for="Input.Email"></label>
+                    <input asp-for="Input.Email" autocomplete="username" placeholder="ornek@email.com" autofocus />
+                    <span asp-validation-for="Input.Email"></span>
+                </div>
+                <div class="login-field">
+                    <label asp-for="Input.Password"></label>
+                    <input asp-for="Input.Password" autocomplete="current-password" placeholder="Şifrenizi yazın" />
+                    <span asp-validation-for="Input.Password"></span>
+                </div>
+                <label class="remember-field"><input asp-for="Input.RememberMe" /> <span>Beni hatırla</span></label>
+                <button class="btn btn-primary login-submit" type="submit">Giriş Yap <span aria-hidden="true">→</span></button>
+            </form>
+            <div class="login-footer"><span>Giriş bilgileriniz yok mu?</span><p>Öğretmeninizle iletişime geçerek hesabınızı oluşturabilirsiniz.</p></div>
+        </div>
+    </div>
+</section>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

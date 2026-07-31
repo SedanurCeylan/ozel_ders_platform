@@ -1,0 +1,4 @@
+@model GameQuestion
+@{ViewData["Title"]="Yeni Mini Test Sorusu";}
+<div class="page-heading"><div><span>Mini seviye testi</span><h1>Yeni Soru Ekle</h1><p>Sınıf, konu, seçenekler ve doğru cevabı belirleyin.</p></div></div><form method="post" class="admin-form"><section class="form-card"><partial name="_Form" model="Model"/></section><div class="form-actions"><a class="admin-btn" asp-action="Index">Vazgeç</a><button class="admin-btn primary">Soruyu Kaydet</button></div></form>
+@section Scripts{<partial name="_ValidationScriptsPartial"/>}

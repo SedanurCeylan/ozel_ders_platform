@@ -1,0 +1,5 @@
+@model OzelDersYonetim.Models.Students.StudentProfile
+@{ ViewData["Title"] = "Öğrenci Düzenle"; }
+<div class="page-heading"><div><span>@Model.FullName</span><h1>Öğrenciyi Düzenle</h1><p>Öğrenci ve veli bilgilerini güncelleyin.</p></div></div>
+<form method="post" class="admin-form"><input asp-for="Id" type="hidden" /><input asp-for="ApplicationUserId" type="hidden" /><input asp-for="CreatedAt" type="hidden" /><div asp-validation-summary="ModelOnly" class="text-danger"></div><section class="form-card"><partial name="_StudentFields" model="Model" /></section><div class="form-actions"><a class="admin-btn" asp-action="Details" asp-route-id="@Model.Id">Vazgeç</a><button class="admin-btn primary" type="submit">Değişiklikleri Kaydet</button></div></form>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

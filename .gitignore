@@ -1,0 +1,11 @@
+bin/
+obj/
+app.db
+app.db-shm
+app.db-wal
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+.DS_Store

@@ -1,0 +1,2 @@
+.admin-header-actions{display:flex;align-items:center;gap:16px}.view-site-btn{display:inline-flex;align-items:center;padding:10px 15px;color:#fff;background:#ee735b;border-radius:9px;text-decoration:none;font-size:12px;font-weight:800;box-shadow:0 8px 20px rgba(238,115,91,.2);transition:.2s}.view-site-btn:hover{color:#fff;background:#d96049;transform:translateY(-1px)}
+@media(max-width:600px){.admin-header-actions{gap:8px}.view-site-btn{padding:9px 11px;font-size:10px}.admin-user>div{display:none}}

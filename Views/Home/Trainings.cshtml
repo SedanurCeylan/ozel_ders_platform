@@ -1,0 +1,3 @@
+@model PublicSiteViewModel
+@{ ViewData["Title"]="Eğitimler"; }
+<section class="inner-hero compact"><div class="container"><span class="eyebrow"><span></span> Eğitimler</span><h1>Her hedef için kişisel bir çalışma planı</h1><p>Programların tüm başlık ve içerikleri yönetici panelinden güncellenebilir.</p></div></section><section class="section"><div class="container program-grid">@foreach(var item in Model.Sections){<article class="program-card"><div class="program-top"><span>@(item.Subtitle??"5–8")</span><small>Program</small></div><div><span class="tag">Kişisel eğitim</span><h2>@item.Title</h2><p>@item.Content</p><a class="text-link" href="/#iletisim">Bilgi al →</a></div></article>}</div></section>

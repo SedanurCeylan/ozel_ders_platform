@@ -1,0 +1,58 @@
+@model IReadOnlyList<ContentSection>
+@{
+    var isHomeDashboard = ViewBag.Page == "Home" && ViewBag.Category is null && ViewBag.ContentType == "sections";
+    ViewData["Title"] = isHomeDashboard ? "Ana Sayfa Yönetimi" : (ViewBag.CategoryName ?? "Genel İçerikler");
+    var names = new Dictionary<string,string>{
+        ["section-hero"]="Karşılama Alanı",["section-teacher"]="Öğretmen Tanıtımı",["section-demo"]="Demo Ders",["section-grades"]="Sınıf Seviyeleri",["section-programs"]="Eğitim Programları",["section-content"]="İlgi Çekici İçerikler",["section-daily"]="Günün Bilgisi",["section-games"]="Matematik Oyunları",["section-documents"]="Ücretsiz Dokümanlar",["section-process"]="Ders Süreci",["section-tracking"]="Öğrenci Takip Sistemi",["section-stats"]="İstatistikler",["section-testimonials"]="Öğrenci Yorumları",["section-faq"]="Sık Sorulan Sorular",["cta"]="İletişim Çağrısı",["contact"]="İletişim Formu"};
+    var descriptions = new Dictionary<string,string>{
+        ["section-hero"]="Ziyaretçinin ana sayfada ilk gördüğü büyük başlık alanı.",["section-teacher"]="Öğretmeni kısaca tanıtan ve Hakkımda sayfasına yönlendiren alan.",["section-demo"]="Öne çıkan ücretsiz demo ders videosu.",["section-grades"]="5, 6, 7 ve 8. sınıf seçeneklerini gösterir.",["section-programs"]="Sunulan eğitim programlarının kartlarını gösterir.",["section-content"]="Matematik ipuçları ve kısa içerikleri gösterir.",["section-daily"]="Her gün otomatik değişen matematik bilgisini gösterir.",["section-games"]="İşlem Arenası ve oyunlara yönlendiren tanıtım alanı.",["section-documents"]="Yayındaki ücretsiz dokümanları gösterir.",["section-process"]="Derslerin nasıl ilerlediğini adım adım anlatır.",["section-tracking"]="Öğrenci panelinin özelliklerini tanıtır.",["section-stats"]="Yayınlamak istediğiniz sayısal başarı bilgilerini gösterir.",["section-testimonials"]="Onaylanmış gerçek öğrenci yorumlarını gösterir.",["section-faq"]="Ziyaretçilerin sık sorduğu soruları gösterir.",["cta"]="Ziyaretçiyi iletişime geçmeye davet eden bant.",["contact"]="Ana sayfanın altındaki iletişim formu."};
+    var icons = new Dictionary<string,string>{["section-hero"]="⌂",["section-teacher"]="♙",["section-demo"]="▶",["section-grades"]="5–8",["section-programs"]="▦",["section-content"]="✦",["section-daily"]="π",["section-games"]="◆",["section-documents"]="▤",["section-process"]="→",["section-tracking"]="✓",["section-stats"]="↗",["section-testimonials"]="★",["section-faq"]="?",["cta"]="✉",["contact"]="@"};
+    var locations = new Dictionary<string,string>{["section-hero"]="Sayfanın en üstü",["section-teacher"]="Karşılama alanının hemen altı",["section-demo"]="Öğretmen tanıtımından sonra",["section-grades"]="Orta bölüm · sınıf seçimi",["section-programs"]="Orta bölüm · programlar",["section-content"]="Orta bölüm · yazılar",["section-daily"]="Orta bölüm · günlük bilgi",["section-games"]="Orta bölüm · oyun tanıtımı",["section-documents"]="Alt bölüm · dosyalar",["section-process"]="Alt bölüm · çalışma biçimi",["section-tracking"]="Alt bölüm · öğrenci paneli",["section-stats"]="Alt bölüm · sayısal bilgiler",["section-testimonials"]="Alt bölüm · gerçek yorumlar",["section-faq"]="Sayfanın sonlarına doğru",["cta"]="İletişim öncesi çağrı",["contact"]="Sayfanın en altı"};
+}
+
+@if(isHomeDashboard)
+{
+    <div class="page-heading simple-home-heading"><div><span>Ana sayfa haritası</span><h1>Ana Sayfada Neler Gösterilsin?</h1><p>Aşağıdaki kartlar ana sayfada yukarıdan aşağıya göründükleri sıradadır.</p></div><a class="admin-btn" asp-area="" asp-controller="Home" asp-action="Index" target="_blank">Ana Sayfayı Gör ↗</a></div>
+    <div class="home-sections-help"><span>i</span><p><strong>Kullanımı çok basit:</strong> “Ana sayfada gizle” yalnızca o alanı ziyaretçiden saklar, bilgileri silmez. “İçeriğini yönet” ise o bölüme ait doğru düzenleme ekranını açar.</p></div>
+    <div class="home-section-admin-grid">
+    @foreach(var item in Model)
+    {
+        var friendlyName=names.GetValueOrDefault(item.SectionKey,item.Title);
+        <article class="home-section-admin-card @(item.IsActive?"visible":"hidden")">
+            <div class="section-location"><b>@item.DisplayOrder.ToString("00")</b><span>@locations.GetValueOrDefault(item.SectionKey,"Ana sayfa bölümü")</span></div>
+            <header><span class="section-admin-icon">@icons.GetValueOrDefault(item.SectionKey,"•")</span><div><small>@(item.IsActive?"ANA SAYFADA GÖRÜNÜYOR":"ANA SAYFADA GİZLİ")</small><h2>@friendlyName</h2></div><i class="section-state-dot"></i></header>
+            <p>@descriptions.GetValueOrDefault(item.SectionKey,"Ana sayfada kullanılan içerik bölümü.")</p>
+            <div class="section-current-title"><small>ŞU ANKİ BAŞLIK</small><strong>@item.Title</strong></div>
+            <footer><form asp-action="Toggle" asp-route-id="@item.Id" asp-route-page="Home" asp-route-contentType="sections" method="post"><button class="section-toggle-btn @(item.IsActive?"turn-off":"turn-on")" type="submit">@(item.IsActive?"Ana sayfada gizle":"Ana sayfada göster")</button></form>
+            @switch(item.SectionKey){
+                case "section-hero":<a asp-controller="HomeHero" asp-action="Index">İçeriğini yönet →</a>break;
+                case "section-teacher":<a asp-controller="TeacherProfile" asp-action="Index">Öğretmen bilgilerine git →</a>break;
+                case "section-demo":<a asp-action="Index" asp-route-page="Home" asp-route-category="demo">Demo dersleri yönet →</a>break;
+                case "section-grades":<a asp-controller="ClassContents" asp-action="Index">Sınıfları yönet →</a>break;
+                case "section-programs":<a asp-action="Index" asp-route-page="Home" asp-route-category="programs">Programları yönet →</a>break;
+                case "section-content":<a asp-action="Index" asp-route-page="Home" asp-route-category="articles">Yazıları yönet →</a>break;
+                case "section-daily":<a asp-controller="DailyFacts" asp-action="Index">Günün bilgilerini yönet →</a>break;
+                case "section-games":<a asp-controller="Games" asp-action="Questions">Oyun sorularını yönet →</a>break;
+                case "section-documents":<a asp-controller="Documents" asp-action="Index">Dokümanları yönet →</a>break;
+                case "section-process":<a asp-action="Index" asp-route-page="Home" asp-route-category="process">Ders sürecini yönet →</a>break;
+                case "section-tracking":<a asp-action="Index" asp-route-page="Home" asp-route-category="tracking">Tanıtımı yönet →</a>break;
+                case "section-stats":<a asp-action="Index" asp-route-page="Home" asp-route-category="statistics">İstatistikleri yönet →</a>break;
+                case "section-testimonials":<a asp-controller="Testimonials" asp-action="Index">Yorumları yönet →</a>break;
+                case "section-faq":<a asp-action="Index" asp-route-page="Home" asp-route-category="faq">Soruları yönet →</a>break;
+                case "contact":<a asp-controller="SiteSettings" asp-action="Index">İletişimi yönet →</a>break;
+                default:<a asp-action="Edit" asp-route-id="@item.Id">Yazısını değiştir →</a>break;
+            }</footer>
+        </article>
+    }
+    </div>
+}
+else
+{
+    <div class="page-heading"><div><span>İçerik yönetimi</span><h1>@(ViewBag.CategoryName??"Genel İçerikler")</h1><p>@(ViewBag.CategoryName is not null?$"{ViewBag.CategoryName} kayıtlarını yönetin.":"Sayfalara ait içerikleri yönetin.")</p></div><a class="admin-btn primary" asp-action="Create" asp-route-category="@ViewBag.Category">+ Yeni içerik</a></div>
+    @if(ViewBag.CategorySection is ContentSection categorySection){<section class="category-visibility-card @(categorySection.IsActive?"is-active":"is-passive")"><div class="category-visibility-icon">@(categorySection.IsActive?"◉":"○")</div><div><small>BÖLÜM GÖRÜNÜRLÜĞÜ</small><h2>@ViewBag.CategoryName şu anda @(categorySection.IsActive?"yayında":"pasif")</h2><p>@(categorySection.IsActive?"Bu bölüm ziyaretçilere görünüyor.":"İçerikler silinmedi; bölüm ziyaretçilerden gizlendi.")</p></div><form asp-action="Toggle" asp-route-id="@categorySection.Id" asp-route-page="Home" asp-route-category="@ViewBag.Category" method="post"><button class="admin-btn @(categorySection.IsActive?"danger-soft":"primary")">@(categorySection.IsActive?"Bölümü Pasif Yap":"Bölümü Aktif Yap")</button></form></section>}
+    @if(ViewBag.Category is null){<div class="filter-row"><a class="@(ViewBag.Page is null?"active":"")" asp-action="Index">Tümü</a><a class="@(ViewBag.Page=="About"?"active":"")" asp-action="Index" asp-route-page="About">Hakkımda</a><a class="@(ViewBag.Page=="Trainings"?"active":"")" asp-action="Index" asp-route-page="Trainings">Eğitimler</a></div>}
+    <div class="table-card"><div class="responsive-table"><table><thead><tr><th>İçerik</th><th>Başlık</th><th>Sıra</th><th>Durum</th><th></th></tr></thead><tbody>
+    @if(Model.Count==0){<tr><td colspan="5" class="empty-state">Henüz içerik bulunmuyor.</td></tr>}
+    @foreach(var item in Model){<tr><td><strong>@(ViewBag.CategoryName??item.PageKey)</strong><small>@item.SectionKey</small></td><td>@item.Title</td><td>@item.DisplayOrder</td><td><span class="status-pill @(item.IsActive?"on":"off")">@(item.IsActive?"Yayında":"Pasif")</span></td><td class="actions"><form asp-action="Toggle" asp-route-id="@item.Id" asp-route-page="@ViewBag.Page" asp-route-category="@ViewBag.Category" method="post"><button>@(item.IsActive?"Gizle":"Yayınla")</button></form><a asp-action="Edit" asp-route-id="@item.Id">Düzenle</a><form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('Bu içerik kalıcı olarak silinsin mi?');"><button>Sil</button></form></td></tr>}
+    </tbody></table></div></div>
+}
