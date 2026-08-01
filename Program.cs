@@ -10,6 +10,7 @@ using OzelDersYonetim.Services.Notifications;
 using OzelDersYonetim.Services.Auditing;
 using OzelDersYonetim.Services.Students;
 using OzelDersYonetim.Services.Games;
+using OzelDersYonetim.Services;
 
 namespace OzelDersYonetim;
 
@@ -17,6 +18,10 @@ public class Program
 {
     public static async Task Main(string[] args)
     {
+        // Some macOS development environments can block indefinitely while creating
+        // configuration file watchers. Environment variables and JSON files are still
+        // loaded; only live reload of appsettings files is disabled.
+        Environment.SetEnvironmentVariable("DOTNET_HOSTBUILDER__RELOADCONFIGONCHANGE", "false");
         var turkishCulture = CultureInfo.GetCultureInfo("tr-TR");
         CultureInfo.DefaultThreadCurrentCulture = turkishCulture;
         CultureInfo.DefaultThreadCurrentUICulture = turkishCulture;
@@ -33,6 +38,7 @@ public class Program
         builder.Services.Configure<FileUploadOptions>(builder.Configuration.GetSection(FileUploadOptions.SectionName));
         builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection(EmailSettings.SectionName));
         builder.Services.Configure<ReminderOptions>(builder.Configuration.GetSection(ReminderOptions.SectionName));
+        builder.Services.Configure<StorageOptions>(builder.Configuration.GetSection(StorageOptions.SectionName));
 
         builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
             {
@@ -52,11 +58,15 @@ public class Program
         {
             options.Cookie.HttpOnly = true;
             options.Cookie.SameSite = SameSiteMode.Lax;
+            options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+                ? CookieSecurePolicy.SameAsRequest
+                : CookieSecurePolicy.Always;
             options.ExpireTimeSpan = TimeSpan.FromHours(8);
             options.SlidingExpiration = true;
             options.AccessDeniedPath = "/Identity/Account/AccessDenied";
         });
         builder.Services.AddScoped<IdentityDataSeeder>();
+        builder.Services.AddSingleton<StoragePathResolver>();
         builder.Services.AddScoped<SiteContentDataSeeder>();
         builder.Services.AddScoped<AssignmentFileService>();
         builder.Services.AddScoped<IAssignmentService, AssignmentService>();
@@ -134,6 +144,7 @@ public class Program
         app.MapControllerRoute(
             name: "default",
             pattern: "{controller=Home}/{action=Index}/{id?}");
+        app.MapGet("/health", () => Results.Ok(new { status = "healthy" })).AllowAnonymous();
         app.MapRazorPages();
 
         app.Run();

@@ -130,13 +130,13 @@ public class ContentSectionsController(ApplicationDbContext dbContext) : Control
     private static string? CategoryPrefix(string? category) => category switch
     {
         "demo" => "demo-", "articles" => "content-", "faq" => "faq-", "programs" => "program-",
-        "process" => "process-", "tracking" => "tracking-", "statistics" => "stat-", "testimonials" => "testimonial-", _ => null
+        "process" => "process-", "tracking" => "tracking-", "statistics" => "stat-", "testimonials" => "testimonial-", "interactive" => "homeui-", _ => null
     };
 
     private static string CategoryName(string category) => category switch
     {
         "demo" => "Demo Dersler", "articles" => "Matematik İçerikleri", "faq" => "Sık Sorulan Sorular", "programs" => "Eğitim Programları",
-        "process" => "Ders Süreci", "tracking" => "Takip Sistemi Özellikleri", "statistics" => "İstatistikler", "testimonials" => "Öğrenci ve Veli Yorumları", _ => "İçerikler"
+        "process" => "Ders Süreci", "tracking" => "Takip Sistemi Özellikleri", "statistics" => "İstatistikler", "testimonials" => "Öğrenci ve Veli Yorumları", "interactive" => "Etkileşimli Ana Sayfa İçerikleri", _ => "İçerikler"
     };
 
     private static string CategorySectionKey(string category) => category switch

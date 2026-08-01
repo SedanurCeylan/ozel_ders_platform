@@ -12,11 +12,14 @@ public class SiteSetting
     [Required, StringLength(120), Display(Name = "Öğretmen adı")]
     public string TeacherName { get; set; } = "Sena Öğretmen";
 
-    [EmailAddress, StringLength(180), Display(Name = "E-posta")]
+    [EmailAddress, StringLength(180), Display(Name = "İletişim e-posta adresi")]
     public string? Email { get; set; }
 
     [Phone, StringLength(40), Display(Name = "Telefon")]
     public string? Phone { get; set; }
+
+    [Url, StringLength(300), Display(Name = "Instagram profil bağlantısı")]
+    public string? InstagramUrl { get; set; }
 
     [StringLength(120), Display(Name = "EmailJS Service ID")]
     public string? EmailJsServiceId { get; set; }

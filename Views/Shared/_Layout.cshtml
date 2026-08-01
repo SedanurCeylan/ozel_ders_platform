@@ -8,6 +8,7 @@
     var demoSectionIsActive = visibleDiscoverySections.Contains("section-demo");
     var contentSectionIsActive = visibleDiscoverySections.Contains("section-content");
     var layoutSettings = await LayoutDb.SiteSettings.AsNoTracking().SingleAsync();
+    var footerContent = await LayoutDb.ContentSections.AsNoTracking().SingleOrDefaultAsync(x => x.PageKey == "Home" && x.SectionKey == "homeui-footer" && x.IsActive);
 }
 <!DOCTYPE html>
 <html lang="tr">
@@ -21,6 +22,7 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/games.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/home-features.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/home-redesign.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/discovery.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/daily-facts.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/testimonials.css" asp-append-version="true" />
@@ -72,21 +74,28 @@
         </main>
     </div>
 
-    <footer class="site-footer">
-        <div class="container footer-grid">
-            <div>
+    <footer class="site-footer expanded-footer">
+        <div class="footer-formula" aria-hidden="true">x² + y² = r²</div>
+        <div class="container footer-main-grid">
+            <div class="footer-intro">
                 <a class="footer-brand" asp-controller="Home" asp-action="Index"><span>∑</span> @layoutSettings.SiteName</a>
-                <p>Her öğrencinin öğrenme yolculuğuna özel, anlaşılır ve sürdürülebilir matematik desteği.</p>
+                <p>@(footerContent?.Content??"Matematiği yalnızca çözülen bir ders değil, anlaşılır ve keşfedilebilir bir düşünme alanına dönüştürüyoruz.")</p>
+                <div class="footer-socials">
+                    @if(!string.IsNullOrWhiteSpace(layoutSettings.InstagramUrl))
+                    {
+                        <a class="instagram-link" href="@layoutSettings.InstagramUrl" target="_blank" rel="noopener noreferrer" aria-label="Instagram hesabımızı ziyaret edin"><span>◎</span><div><small>BİZİ TAKİP EDİN</small><strong>Instagram</strong></div><b>↗</b></a>
+                    }
+                    else
+                    {
+                        <span class="instagram-link is-empty"><span>◎</span><div><small>SOSYAL MEDYA</small><strong>Instagram hesabı yakında</strong></div></span>
+                    }
+                </div>
             </div>
-            <div class="footer-links">
-                <a asp-controller="Home" asp-action="About">Hakkımda</a>
-                <a asp-controller="Home" asp-action="Trainings">Eğitimler</a>
-                <a asp-controller="Home" asp-action="SecondaryEducation">Sınıflar</a>
-                <a asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a>
-                <a asp-controller="Home" asp-action="Index" asp-fragment="iletisim">İletişim</a>
-            </div>
-            <p class="footer-copy">© @DateTime.Today.Year @layoutSettings.SiteName</p>
+            <nav class="footer-column" aria-label="Footer hızlı bağlantılar"><strong>Hızlı Bağlantılar</strong><a asp-controller="Home" asp-action="About">Hakkımda</a><a asp-controller="Home" asp-action="Trainings">Eğitimler</a><a asp-controller="Home" asp-action="SecondaryEducation">Sınıflar</a><a asp-controller="Home" asp-action="Index" asp-fragment="iletisim">İletişim</a></nav>
+            <nav class="footer-column" aria-label="Footer keşfet bağlantıları"><strong>Keşfet</strong><a asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a><a asp-controller="Discovery" asp-action="Content">Ücretsiz İçerikler</a><a asp-controller="Discovery" asp-action="Documents">Dokümanlar</a><a asp-controller="LevelTest" asp-action="Index">Mini Seviye Testi</a></nav>
+            <div class="footer-column footer-contact"><strong>İletişim</strong>@if(!string.IsNullOrWhiteSpace(layoutSettings.Email)){<a href="mailto:@layoutSettings.Email">@layoutSettings.Email</a>}@if(!string.IsNullOrWhiteSpace(layoutSettings.Phone)){<a href="tel:@layoutSettings.Phone">@layoutSettings.Phone</a>}<span>5–8. sınıf matematik</span><a asp-area="Identity" asp-page="/Account/Login">Öğrenci Girişi →</a></div>
         </div>
+        <div class="container footer-bottom"><p>© @DateTime.Today.Year @layoutSettings.SiteName. Tüm hakları saklıdır.</p><div><a asp-controller="Home" asp-action="About">Gizlilik</a><a asp-controller="Home" asp-action="About">KVKK</a><span>@(footerContent?.Title??"Matematiği keşfet · çöz · ilerle")</span></div></div>
     </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

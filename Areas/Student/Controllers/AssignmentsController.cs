@@ -11,7 +11,7 @@ using OzelDersYonetim.Services.Assignments;
 namespace OzelDersYonetim.Areas.Student.Controllers;
 
 [Area("Student"), Authorize(Roles = IdentityDataSeeder.StudentRole)]
-public class AssignmentsController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IAssignmentSubmissionService submissionService) : Controller
+public class AssignmentsController(ApplicationDbContext dbContext, UserManager<ApplicationUser> userManager, IAssignmentSubmissionService submissionService, AssignmentFileService assignmentFiles) : Controller
 {
     public async Task<IActionResult> Index(string? scope)
     {
@@ -29,6 +29,27 @@ public class AssignmentsController(ApplicationDbContext dbContext, UserManager<A
         if (item is null) return NotFound();
         if (item.ViewedAt is null) { item.ViewedAt = DateTime.UtcNow; if (item.Status == StudentAssignmentStatus.Assigned) item.Status = StudentAssignmentStatus.Viewed; await dbContext.SaveChangesAsync(); }
         return View(new AssignmentSubmissionViewModel { StudentAssignment = item });
+    }
+
+    public async Task<IActionResult> DownloadAttachment(int id)
+    {
+        var userId = userManager.GetUserId(User);
+        var item = await dbContext.StudentAssignments.AsNoTracking().Include(x => x.Assignment)
+            .SingleOrDefaultAsync(x => x.Id == id && x.StudentProfile.ApplicationUserId == userId);
+        if (item?.Assignment.AttachmentPath is null) return NotFound();
+        var file = assignmentFiles.Open(item.Assignment.AttachmentPath, item.AssignmentId);
+        return file is null ? NotFound() : File(file.Value.Stream, file.Value.ContentType, "odev-eki" + Path.GetExtension(item.Assignment.AttachmentPath));
+    }
+
+    public async Task<IActionResult> DownloadSubmission(int id)
+    {
+        var userId = userManager.GetUserId(User);
+        var item = await dbContext.AssignmentSubmissions.AsNoTracking()
+            .Include(x => x.StudentAssignment)
+            .SingleOrDefaultAsync(x => x.Id == id && x.StudentAssignment.StudentProfile.ApplicationUserId == userId);
+        if (item?.FilePath is null) return NotFound();
+        var file = assignmentFiles.Open(item.FilePath, item.StudentAssignment.AssignmentId, item.StudentAssignment.StudentProfileId);
+        return file is null ? NotFound() : File(file.Value.Stream, file.Value.ContentType, item.FileName ?? "teslim" + Path.GetExtension(item.FilePath));
     }
 
     [HttpPost, ValidateAntiForgeryToken, RequestSizeLimit(25 * 1024 * 1024)]

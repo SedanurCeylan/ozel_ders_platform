@@ -1,66 +1,89 @@
-# Matematik Atölyesi — Kullanım Kılavuzu
+# Matematik Atölyesi
 
-Matematik Atölyesi; özel ders öğretmeninin öğrencilerini, derslerini, ödevlerini, dokümanlarını, duyurularını, gelişim kayıtlarını ve bildirimlerini tek panelden yönetmesini sağlayan Türkçe bir ASP.NET Core uygulamasıdır.
+Özel matematik dersi süreçlerini tek panelden yönetmek için geliştirilmiş, Türkçe bir ASP.NET Core uygulamasıdır. Genel web sitesi, yönetici paneli ve öğrenci paneli aynı uygulama içinde çalışır.
 
-Uygulamada iki kullanıcı rolü bulunur:
+> [!IMPORTANT]
+> Proje derleniyor ve Release paketi üretilebiliyor. Deploy öncesinde üretim e-posta/site adresi değerlerini tanımlayın, kalıcı `/data` diski bağlayın ve [deploy kontrol listesini](#deploy-öncesi-zorunlu-kontroller) tamamlayın.
 
-- **Admin:** Öğretmen ve sistem yöneticisi
-- **Student:** Yalnızca kendi bilgilerine erişebilen öğrenci
+## Özellikler
 
-## İçindekiler
+### Genel web sitesi
 
-1. [Teknik bilgiler](#teknik-bilgiler)
-2. [İlk kurulum](#ilk-kurulum)
-3. [Uygulamayı çalıştırma](#uygulamayı-çalıştırma)
-4. [Yönetici kullanım kılavuzu](#yönetici-kullanım-kılavuzu)
-5. [Öğrenci kullanım kılavuzu](#öğrenci-kullanım-kılavuzu)
-6. [İşlem Arenası](#işlem-arenası)
-7. [E-posta ayarları](#e-posta-ayarları)
-8. [Dosya yüklemeleri](#dosya-yüklemeleri)
-9. [Otomatik hatırlatmalar](#otomatik-hatırlatmalar)
-10. [Güvenlik](#güvenlik)
-11. [Veritabanı ve migration](#veritabanı-ve-migration)
-12. [Sorun giderme](#sorun-giderme)
+- Yönetilebilir ana sayfa, hakkımda ve eğitim içerikleri
+- Sabit navigasyon ve mobil uyumlu arayüz
+- Demo dersler ve YouTube bağlantıları
+- Herkese açık matematik içerikleri ve dokümanlar
+- Günün matematik bilgisi
+- Öğrenci yorumları
+- Instagram, e-posta ve iletişim bilgileri
+- İşlem Arenası ve seviye belirleme testi
 
-## Teknik bilgiler
+### Yönetici paneli
 
-- ASP.NET Core MVC ve Razor Pages
-- .NET 8
-- ASP.NET Core Identity
+- Öğrenci ve öğrenci hesabı yönetimi
+- Ders planlama ve katılım kaydı
+- Ödev oluşturma, teslim alma, puanlama ve geri bildirim
+- Genel veya öğrenciye özel doküman paylaşımı
+- Duyuru, bildirim ve ek dosya yönetimi
+- Deneme sınavı ve konu gelişimi takibi
+- Günün bilgileri ve öğrenci yorumlarının onaylanması
+- Ana sayfa ve genel site içeriklerinin düzenlenmesi
+- SMTP/e-posta ayarları ve e-posta kayıtları
+- İşlem Arenası soru yönetimi
+- İşlem geçmişi (audit log)
+
+### Öğrenci paneli
+
+- Yaklaşan ve geçmiş dersler
+- Öğrenciye atanmış ödevler ve dosya teslimi
+- Paylaşılan dokümanlar
+- Duyurular ve bildirimler
+- Deneme sonuçları ve gelişim grafikleri
+- Profil fotoğrafı ve öğrenci yorumu
+- Matematik oyunları
+
+## Teknoloji
+
+- .NET 8 ve ASP.NET Core MVC
+- Razor Pages ve ASP.NET Core Identity
 - Entity Framework Core 8
 - SQLite
-- Bootstrap ve özel responsive CSS
-- Chart.js ile gelişim grafikleri
-- SMTP tabanlı HTML e-posta sistemi
-- ASP.NET Core `BackgroundService` ile otomatik hatırlatmalar
+- Bootstrap, özel CSS ve JavaScript
+- Chart.js
+- SMTP tabanlı e-posta
+- `BackgroundService` tabanlı otomatik hatırlatmalar
 
-Ana proje dosyası `OzelDersYonetim.csproj`, yerel veritabanı ise `app.db` dosyasıdır.
+## Proje yapısı
 
-## İlk kurulum
+```text
+Areas/Admin/       Yönetici paneli
+Areas/Student/     Öğrenci paneli
+Controllers/       Herkese açık sayfalar
+Data/              DbContext, seed ve migration dosyaları
+Models/            Veritabanı ve ekran modelleri
+Services/          E-posta, dosya, bildirim ve iş kuralları
+Views/             Genel site Razor görünümleri
+wwwroot/           CSS, JavaScript ve statik dosyalar
+App_Data/uploads/  Korumalı yüklemelerin yerel klasörü
+```
+
+## Yerel kurulum
 
 ### Gereksinimler
 
-- .NET 8 SDK
+- [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
 - macOS, Windows veya Linux
-- Gerçek e-posta gönderilecekse bir SMTP hesabı
-
-.NET kurulumunu kontrol edin:
-
-```bash
-dotnet --version
-```
-
-### Proje klasörüne geçiş
-
-Klasör adında boşluk bulunduğu için yolu çift tırnakla kullanın:
+- Gerçek e-posta gönderimi için SMTP hesabı
 
 ```bash
 cd "/Users/seda/Documents/ablam web"
+dotnet restore
+dotnet build
 ```
 
-### Yönetici hesabını tanımlama
+### İlk yönetici hesabı
 
-Yönetici parolası kaynak koda veya `appsettings.json` dosyasına yazılmaz. User Secrets kullanılır:
+Parolayı `appsettings.json` içine yazmayın. Yerel geliştirmede User Secrets kullanın:
 
 ```bash
 dotnet user-secrets set "AdminSeed:Email" "ogretmen@example.com"
@@ -69,554 +92,188 @@ dotnet user-secrets set "AdminSeed:Password" "Guclu-Gecici-Parola1!"
 
 Parola en az 10 karakter olmalı; büyük harf, küçük harf, rakam ve özel karakter içermelidir.
 
-> Terminalde `dquote>` görünürse çift tırnaklardan biri kapanmamıştır. `Control + C` ile komutu iptal edip satırı yeniden, düz çift tırnaklarla yazın.
-
-Uygulama ilk açılışta:
-
-- Veritabanı migration'larını uygular.
-- `Admin` ve `Student` rollerini oluşturur.
-- User Secrets ile verilen yönetici hesabını oluşturur.
-- Varsayılan site içeriklerini ve İşlem Arenası sorularını hazırlar.
-
-## Uygulamayı çalıştırma
-
-Projeyi derleyin:
+### Çalıştırma
 
 ```bash
-dotnet build
+dotnet run --launch-profile http
 ```
 
-Uygulamayı başlatın:
+Varsayılan adresler:
+
+- Ana site: `http://localhost:5080`
+- Giriş: `http://localhost:5080/Identity/Account/Login`
+- Yönetici: `http://localhost:5080/Admin`
+- Öğrenci: `http://localhost:5080/Student`
+
+İlk başlangıçta migration'lar uygulanır; roller, yönetici hesabı, başlangıç içerikleri ve oyun soruları hazırlanır.
+
+## Yapılandırma
+
+Üretimde gizli değerleri dosyaya yazmak yerine platformun environment variables/secrets bölümünde tanımlayın. ASP.NET Core iç içe ayarlar için çift alt çizgi (`__`) kullanır.
+
+| Değişken | Açıklama | Örnek |
+|---|---|---|
+| `ASPNETCORE_ENVIRONMENT` | Çalışma ortamı | `Production` |
+| `ASPNETCORE_URLS` | Uygulamanın dinleyeceği adres | `http://0.0.0.0:8080` |
+| `ConnectionStrings__DefaultConnection` | SQLite bağlantısı | `Data Source=/data/app.db;Cache=Shared` |
+| `Storage__RootPath` | Kalıcı yükleme dizini | `/data/uploads` |
+| `AdminSeed__Email` | İlk yönetici e-postası | `admin@alanadiniz.com` |
+| `AdminSeed__Password` | Güçlü ilk yönetici parolası | secret olarak girilmeli |
+| `EmailSettings__SmtpServer` | SMTP sunucusu | sağlayıcınıza göre |
+| `EmailSettings__SmtpPort` | SMTP portu | `587` |
+| `EmailSettings__SenderName` | Gönderen adı | `Matematik Atölyesi` |
+| `EmailSettings__SenderEmail` | Gönderen adresi | `noreply@alanadiniz.com` |
+| `EmailSettings__Username` | SMTP kullanıcı adı | secret olarak girilmeli |
+| `EmailSettings__Password` | SMTP parolası | secret olarak girilmeli |
+| `EmailSettings__EnableSsl` | TLS/SSL kullanımı | `true` |
+| `EmailSettings__SiteUrl` | Canlı sitenin kök adresi | `https://alanadiniz.com` |
+| `Reminders__Enabled` | Otomatik hatırlatmalar | `true` veya `false` |
+
+> [!WARNING]
+> Yönetici parolası, SMTP parolası ve gerçek bağlantı bilgileri Git'e gönderilmemelidir.
+
+## Veritabanı ve migration
+
+Yerel veritabanı `app.db` dosyasıdır. Uygulama başlangıçta bekleyen migration'ları otomatik uygular.
+
+Yeni migration oluşturmak için:
 
 ```bash
-dotnet run
+dotnet ef migrations add AciklayiciMigrationAdi
+dotnet ef database update
 ```
 
-Tarayıcıdan açın:
-
-- Ana site: [http://localhost:5080](http://localhost:5080)
-- Giriş: [http://localhost:5080/Identity/Account/Login](http://localhost:5080/Identity/Account/Login)
-- Yönetici paneli: [http://localhost:5080/Admin](http://localhost:5080/Admin)
-- Öğrenci paneli: [http://localhost:5080/Student](http://localhost:5080/Student)
-
-Uygulamayı durdurmak için terminalde `Control + C` kullanın.
-
-Kod değişikliklerinden sonra çalışan uygulamayı durdurup tekrar `dotnet run` komutunu çalıştırın.
-
-## Genel web sitesi
-
-Ziyaretçiler giriş yapmadan şu sayfaları görüntüleyebilir:
-
-- Ana Sayfa
-- Hakkımda
-- Eğitimler
-- Ortaöğretim içerikleri
-
-Navbar kullanıcı durumuna göre değişir:
-
-- Misafirde **Öğrenci Girişi**
-- Öğrencide **Öğrenci Panelim**
-- Yöneticide **Yönetim Paneli**
-
-Genel sayfalardaki dinamik metinler yönetici panelindeki **Genel İçerikler** ve **Site Ayarları** bölümlerinden yönetilir.
-
-## Yönetici kullanım kılavuzu
-
-Yönetici hesabıyla giriş yapıldığında kullanıcı `/Admin` alanına yönlendirilir.
-
-### Genel Bakış
-
-Dashboard üzerinde aşağıdaki özetler gösterilir:
-
-- Toplam, aktif ve pasif öğrenci sayıları
-- Bugünkü ve yaklaşan dersler
-- Bekleyen, geciken ve değerlendirme bekleyen ödevler
-- Toplam doküman sayısı
-- Gönderilemeyen e-postalar
-- Bu ay yapılan dersler
-- Son öğrenciler, teslimler, sınav sonuçları ve e-posta hataları
-
-### Öğrenci yönetimi
-
-**Tüm Öğrenciler** sayfasında:
-
-- Ad, soyad veya e-posta ile arama
-- Sınıf seviyesi filtresi
-- Aktif/pasif filtresi
-- Çevrim içi, yüz yüze veya hibrit ders filtresi
-- Ödev teslim durumu filtresi
-- Kayıt tarihine göre sıralama
-
-yapılabilir.
-
-Yeni öğrenci kaydında şu bilgiler tutulabilir:
-
-- Ad, soyad ve profil fotoğrafı
-- E-posta, telefon ve doğum tarihi
-- Sınıf seviyesi ve okul
-- Veli adı, telefonu ve e-postası
-- Ders türü ve ders biçimi
-- Kayıt tarihi ve öğretmen notu
-- Hesap aktiflik durumu
-
-Öğrenci oluştururken isteğe bağlı olarak giriş hesabı da oluşturulabilir. Geçici parola yalnızca Identity tarafından hash'lenerek saklanır; veritabanında düz metin tutulmaz.
-
-Öğrenci detayında:
-
-- Genel bilgiler
-- Ders programı ve katılım
-- Ödevler ve teslimler
-- Paylaşılan dokümanlar
-- Deneme sonuçları
-- Konu gelişimi
-- Özel öğretmen notları
-- E-posta geçmişi
-
-birlikte görüntülenir.
-
-Yönetici ayrıca:
-
-- Öğrenciyi düzenleyebilir.
-- Aktif veya pasif yapabilir.
-- Akademik geçmişi korunacak şekilde arşivleyebilir.
-- Profil fotoğrafını değiştirebilir.
-- Öğrenci hesabı oluşturabilir.
-- Geçici parola belirleyerek şifreyi sıfırlayabilir.
-- Öğrenciye, veliye veya her ikisine e-posta gönderebilir.
-
-### Ders ve katılım yönetimi
-
-**Takvim ve Dersler** bölümünde:
-
-- Bir veya birden fazla öğrenciye ders oluşturulur.
-- Başlangıç ve bitiş tarihi belirlenir.
-- Çevrim içi veya yüz yüze ders seçilir.
-- Çevrim içi toplantı bağlantısı eklenir.
-- Ders konusu ve öğretmen notları tutulur.
-- Planlandı, onaylandı, tamamlandı, ertelendi veya iptal durumları yönetilir.
-
-Ders sonrasında öğrenci bazında:
-
-- Katıldı/katılmadı bilgisi
-- Çözülen soru sayısı
-- Performans notu
-
-kaydedilebilir. Katılım oranı öğrenci detayında otomatik hesaplanır.
-
-### Ödev yönetimi
-
-**Tüm Ödevler** bölümünde:
-
-- Tek öğrenciye, birden fazla öğrenciye veya sınıf seviyesine ödev atanabilir.
-- Başlık, konu, açıklama, başlangıç ve son teslim tarihi girilebilir.
-- Maksimum puan belirlenebilir.
-- PDF, görsel veya desteklenen ek dosya yüklenebilir.
-- Geç teslim, dosya yükleme ve öğrenci açıklaması seçenekleri yönetilebilir.
-- Ödev aktif veya pasif yapılabilir.
-
-Teslim detayında yönetici:
-
-- Öğrencinin açıklamasını ve yüklediği dosyayı görür.
-- Puan verir.
-- Öğretmen geri bildirimi yazar.
-- Yeniden teslim ister.
-
-Ödev atama ve değerlendirme işlemleri öğrenciye site içi bildirim oluşturabilir; SMTP ayarlıysa e-posta da gönderilir.
-
-### Doküman yönetimi
-
-Doküman erişim türleri:
-
-- Herkese açık
-- Giriş yapan öğrencilere açık
-- Belirli öğrencilere özel
-
-Yönetici doküman yükleyebilir, kategori belirleyebilir, öğrenci seçebilir, düzenleyebilir ve erişime kapatabilir. Öğrencinin görüntüleme ve indirme zamanı kaydedilir.
-
-### Duyuru yönetimi
-
-Duyurular:
-
-- Tüm öğrencilere
-- Belirli sınıf seviyesine
-- Seçilen öğrencilere
-
-yayınlanabilir. Başlangıç/bitiş tarihi, aktiflik, ek PDF veya görsel ve e-posta gönderim tercihi bulunur. Yayından kaldırılan duyuruların okuma geçmişi korunur.
-
-### Deneme ve gelişim takibi
-
-Öğrenci seçildikten sonra:
-
-- Deneme sınavı sonucu eklenebilir.
-- Doğru, yanlış ve boş sayıları girilebilir.
-- Net değeri `Doğru - (Yanlış / 4)` formülüyle hesaplanır.
-- Matematik puanı, süre ve öğretmen yorumu eklenebilir.
-- Sonuç isteğe bağlı olarak veliye e-posta ile gönderilebilir.
-- Konu bazlı başarı yüzdesi ve gelişim durumu kaydedilebilir.
-- Gelişim kaydı veliye bildirilebilir.
-- Yalnızca yöneticinin görebildiği özel öğretmen notları eklenebilir.
-
-Öğrenci ve yönetici ekranlarında net değişimi grafikle gösterilir.
-
-### Öğretmen notları
-
-Öğretmen notları öğrenciye gösterilmez. Kullanılabilen kategoriler:
-
-- Genel
-- Akademik
-- Ödev
-- Katılım
-- Veli görüşmesi
-- Gelişim
-- Hatırlatma
-
-Notlar önemli olarak işaretlenebilir.
-
-### E-posta geçmişi
-
-Her gönderim için:
-
-- Alıcı
-- Konu
-- E-posta türü
-- İçerik
-- Başarı durumu
-- Hata mesajı
-- Gönderim tarihi
-
-kaydedilir. Liste başarı durumuna ve arama metnine göre filtrelenebilir. Başarısız e-postalar yeniden gönderilebilir.
-
-SMTP ayarlı değilse uygulama çökmez; gönderim başarısız olarak kaydedilir.
-
-### İşlem geçmişi
-
-Önemli yönetici işlemleri Audit Log'a yazılır. İşlem geçmişi, işlem ve kayıt türüne göre filtrelenebilir. Kayıtlarda kullanıcı, zaman, IP adresi ve ilgili kayıt bilgileri bulunur.
-
-### Oyun yönetimi
-
-Yönetici:
-
-- İşlem Arenası skorlarını görebilir.
-- Doğru/yanlış, doğruluk, ortalama cevap süresi ve toplam puanı inceleyebilir.
-- Şüpheli derecede hızlı oturumları görebilir.
-- Hatalı oyun sonuçlarını silebilir.
-- Soru bankasını sınıf ve konuya göre filtreleyebilir.
-- Yeni çoktan seçmeli soru ekleyebilir.
-- Soruyu aktif veya pasif yapabilir.
-
-### Site içeriği ve ayarlar
-
-**Genel İçerikler** bölümünden sayfa/bölüm bazlı metinler, başlıklar, sıralama ve aktiflik yönetilir.
-
-**Site Ayarları** bölümünden site adı, öğretmen bilgileri, iletişim bilgileri ve genel metinler güncellenir.
-
-## Öğrenci kullanım kılavuzu
-
-Öğrenci hesabı yönetici tarafından oluşturulur. Öğrenci e-posta adresi ve geçici parolayla giriş yapar. İlk girişte parola değişikliği istenebilir.
-
-### Panelim
-
-Dashboard üzerinde:
-
-- Yaklaşan ders sayısı
-- Bekleyen ve geciken ödevler
-- Değerlendirilen ödevler
-- Okunmamış bildirimler
-- Paylaşılan dokümanlar
-- En yakın ders
-- Yaklaşan teslim tarihleri
-- Son duyurular
-- Son dokümanlar
-- Öğretmen geri bildirimleri
-
-görüntülenir.
-
-### Profilim
-
-Öğrenci kişisel, okul ve veli bilgilerini görüntüler. E-posta ve temel kimlik bilgileri yönetici kayıtlarıyla ilişkilidir. Hesap sayfasından ad, soyad ve telefon bilgileri; şifre sayfasından parola güncellenebilir.
-
-### Derslerim
-
-Öğrenci yalnızca kendisine atanmış yaklaşan ve geçmiş dersleri görür. Çevrim içi derslerde toplantı bağlantısına ders detayından erişir.
-
-### Ödevlerim
-
-Öğrenci:
-
-- Aktif, tamamlanan ve geciken ödevleri filtreler.
-- Ödev açıklamasını ve eklerini görüntüler.
-- Açıklama yazar.
-- Desteklenen dosyayı yükler.
-- Teslim durumunu takip eder.
-- Puanı ve öğretmen geri bildirimini okur.
-- Yeniden teslim istendiyse yeni sürüm yükler.
-
-### Dokümanlarım
-
-Öğrenci genel ve kendisine özel dokümanları kategoriye göre görüntüler ve indirir. Başka öğrenciye ait özel dokümanlara erişemez.
-
-### Duyurular
-
-Öğrenci kendisine, sınıfına veya tüm öğrencilere gönderilmiş aktif duyuruları görür. Duyuru açıldığında okunma zamanı kaydedilir.
-
-### Gelişimim
-
-Öğrenci:
-
-- Deneme sınavı sonuçlarını
-- Net değişimi grafiğini
-- Konu gelişim yüzdelerini
-- Ödev başarı oranını
-- Katılım oranını
-- Öğretmen geri bildirimlerini
-
-görüntüleyebilir. Yöneticinin özel öğretmen notları burada gösterilmez.
-
-### Bildirimler
-
-Bildirim türleri arasında yeni ödev, değerlendirme, ders, doküman, duyuru ve hatırlatmalar bulunur. Öğrenci bildirime tıklayarak ilgili kayda gider veya tüm bildirimleri okundu olarak işaretler.
-
-### Matematik Oyunları
-
-Öğrenci panelindeki **Matematik Oyunları** menüsünden İşlem Arenası'na ulaşılır. Geometri Kaşifi kartı şimdilik **Yakında** durumundadır.
-
-## İşlem Arenası
-
-İşlem Arenası 5, 6, 7 ve 8. sınıflar için hız ve doğruluk odaklı matematik oyunudur.
-
-Oyun başlamadan önce:
-
-- Sınıf seviyesi
-- Konu
-- Kolay, orta veya zor seviye
-- 30 saniyelik Sprint, 45 saniyelik Hızlı veya 60 saniyelik Klasik mod
-
-seçilir. Varsayılan sınıf öğrencinin profilinden alınır.
-
-Oyun sırasında üst alanda:
-
-- Kalan süre
-- Puan
-- Doğru sayısı
-- Yanlış sayısı
-- Doğru cevap serisi
-- Öğrenci ve rakip ilerleme çubukları
-
-gösterilir.
-
-Puanlama:
-
-- Sorunun temel puanı zorluk seviyesine göre belirlenir.
-- İlk 3 saniyedeki doğru cevap `+50` hız bonusu kazanır.
-- İlk 6 saniyedeki doğru cevap `+25` hız bonusu kazanır.
-- Üçlü ve beşli doğru serilerde ek seri bonusu verilir.
-
-Seçeneklerin sırası her soruda karıştırılır; doğru cevap aynı yerde gösterilmez. Soru zorluğu öğrencinin doğru/yanlış performansına göre uyarlanabilir.
-
-Oyun sonunda:
-
-- Toplam puan
-- Doğru ve yanlış sayısı
-- Başarı yüzdesi
-- Ortalama cevap süresi
-- En uzun seri
-- Önceki rekor ve yeni rekor durumu
-- Yanlış cevapların açıklamaları
-
-gösterilir.
-
-Puan istemciye güvenilerek kaydedilmez. Soru, öğrenci sahipliği, cevap süresi ve puan sunucuda doğrulanır. Tamamlanmış oturum tekrar tamamlanamaz ve öğrenci başka öğrencinin sonucuna erişemez.
-
-## E-posta ayarları
-
-### Ana sayfa iletişim formu — EmailJS
-
-Ana sayfadaki iletişim formu EmailJS Browser SDK kullanır. EmailJS hesabında bir e-posta servisi ve şablon oluşturduktan sonra **Yönetim Paneli → Site Ayarları → İletişim formu · EmailJS** bölümüne şu üç değeri girin:
-
-- Service ID
-- Template ID
-- Public Key
-
-EmailJS şablonunda kullanılabilen form değişkenleri:
-
-- `{{from_name}}`
-- `{{reply_to}}`
-- `{{phone}}`
-- `{{grade}}`
-- `{{message}}`
-- `{{to_email}}`
-
-EmailJS özel anahtarını site ayarlarına veya kaynak koda eklemeyin. Ayarlar girilmeden form dış servise istek göndermez ve ziyaretçiye yapılandırma uyarısı gösterir.
-
-### Sistem e-postaları — SMTP
-
-SMTP parolasını `appsettings.json` içine yazmayın. User Secrets kullanın:
-
-```bash
-dotnet user-secrets set "EmailSettings:SmtpServer" "smtp.example.com"
-dotnet user-secrets set "EmailSettings:SmtpPort" "587"
-dotnet user-secrets set "EmailSettings:SenderName" "Matematik Atölyesi"
-dotnet user-secrets set "EmailSettings:SenderEmail" "ogretmen@example.com"
-dotnet user-secrets set "EmailSettings:Username" "ogretmen@example.com"
-dotnet user-secrets set "EmailSettings:Password" "SMTP-UYGULAMA-PAROLASI"
-dotnet user-secrets set "EmailSettings:EnableSsl" "true"
-dotnet user-secrets set "EmailSettings:SiteUrl" "http://localhost:5080"
-```
-
-Gmail gibi sağlayıcılarda normal hesap parolası yerine uygulama parolası gerekebilir.
-
-E-posta gönderilebilen başlıca durumlar:
-
-- Yeni öğrenci hesabı
-- Şifre sıfırlama
-- Yeni ödev ve değerlendirme
-- Ders planlama/değişiklik
-- Doküman paylaşımı
-- Duyuru
-- Otomatik ödev/ders hatırlatması
-- Öğrenci veya veliye özel mesaj
-- Deneme sonucu ve gelişim bilgilendirmesi
+Yedek almak için uygulamayı durdurduktan sonra `app.db` ve yükleme klasörlerini birlikte yedekleyin. Canlı veritabanını çalışan uygulama üzerinden doğrudan kopyalamak yerine SQLite'ın güvenli yedekleme yöntemini kullanın.
 
 ## Dosya yüklemeleri
 
-Varsayılan maksimum dosya boyutu 20 MB'dir:
-
-```json
-"FileUploads": {
-  "MaximumSizeMb": 20
-}
-```
-
-Ödev teslimlerinde desteklenen temel türler:
+Desteklenen türler:
 
 - PDF
 - JPG/JPEG
 - PNG
 - DOCX
 
-Dosyalarda uzantı ve içerik türü kontrol edilir. Benzersiz dosya adı üretilir ve kullanıcıdan gelen dosya yolu doğrudan kullanılmaz.
+Varsayılan üst sınır 20 MB'dir. Profil fotoğrafları en fazla 5 MB olabilir.
 
-## Otomatik hatırlatmalar
+Yerel geliştirmede tüm dosyalar `App_Data/uploads` altında tutulur. Üretimde `Storage__RootPath` ile kalıcı bir dizin seçilmelidir. Ödev ekleri ve öğrenci teslimleri dahil hiçbir özel dosya `wwwroot` altından sunulmaz; indirmeler rol ve sahiplik kontrolü yapan endpoint'lerden geçer.
 
-Arka plan servisi düzenli olarak yaklaşan/geciken ödevleri ve yaklaşan dersleri kontrol eder. Aynı hatırlatmanın tekrar gönderilmemesi için gönderim kaydı tutulur.
+## Deploy öncesi zorunlu kontroller
 
-`appsettings.json` ayarı:
+Aşağıdaki maddeler tamamlanmadan canlıya çıkmayın:
 
-```json
-"Reminders": {
-  "Enabled": true,
-  "CheckIntervalMinutes": 15
-}
-```
+- [x] `app.db` dosyası publish paketinden çıkarıldı.
+- [x] Ödev ve öğrenci teslim dosyaları `wwwroot` dışına taşındı ve yetki kontrollü indiriliyor.
+- [x] Tüm yeni yüklemeler `Storage__RootPath` ile tek bir kökten yönetiliyor.
+- [ ] SQLite dosyası ve yükleme dizini için kalıcı disk/volume bağlayın.
+- [ ] Migration snapshot dosyasını güncel modelle eşitleyin.
+- [ ] `EmailSettings__SiteUrl` değerini HTTPS canlı alan adıyla değiştirin.
+- [ ] SMTP ve yönetici bilgilerini platform secrets alanına girin.
+- [ ] `AllowedHosts` değerini canlı alan adıyla sınırlandırın.
+- [x] .NET 8 SDK `global.json` ile sabitlendi ve `/health` endpoint'i eklendi.
+- [x] Yerel macOS ortamındaki başlangıç gecikmesi giderildi ve uygulamanın dinlemeye geçtiği doğrulandı.
+- [ ] Admin, öğrenci ve yetkisiz ziyaretçi akışlarını uçtan uca test edin.
+- [ ] Veritabanı ve yüklenen dosyalar için otomatik yedekleme kurun.
 
-Hatırlatmaları kapatmak için `Enabled` değerini `false` yapın.
-
-## Güvenlik
-
-- Admin ve Student için rol tabanlı yetkilendirme uygulanır.
-- Öğrenci sorgularında kullanıcı kimliği sunucu tarafında alınır.
-- Öğrenci başka öğrencinin ödev, ders, doküman, bildirim veya oyun kaydına erişemez.
-- Formlarda CSRF koruması kullanılır.
-- Parolalar Identity tarafından hash'lenir.
-- Geçici parolalar e-posta geçmişinde saklanmaz.
-- Dosya türü, MIME ve boyut kontrolleri uygulanır.
-- Hassas yapılandırmalar User Secrets veya ortam değişkeninde tutulur.
-- Güvenlik başlıkları ve hesap kilitleme politikası etkindir.
-- Öğrenci silmek yerine akademik geçmişi koruyan arşivleme uygulanır.
-- Yönetici işlemleri Audit Log ile izlenir.
-
-## Veritabanı ve migration
-
-Uygulama SQLite kullanır. Veritabanı dosyası:
-
-```text
-app.db
-```
-
-Uygulama başlatılırken bekleyen migration'lar otomatik uygulanır. Manuel kullanım:
+Release kontrolü:
 
 ```bash
-dotnet ef database update
+dotnet build -c Release
+dotnet publish -c Release -o ./publish
 ```
 
-Yeni migration oluşturmak için:
+Publish klasöründe gerçek `app.db`, parola, kullanıcı yüklemesi veya geliştirme sırrı bulunmadığını elle doğrulayın.
 
-```bash
-dotnet ef migrations add MigrationAdi
-dotnet ef database update
-```
+## Nerede deploy edilmeli?
 
-Gerçek veriler bulunan `app.db` dosyasını silmeyin. Büyük değişikliklerden önce yedeğini alın:
+### 1. Önerilen üretim mimarisi: Azure App Service
 
-```bash
-cp app.db app-backup.db
-```
+Uzun süre kullanılacak gerçek öğrenci verileri için en sağlam seçenek:
 
-## Proje yapısı
+- Uygulama: Azure App Service
+- Veritabanı: Azure SQL veya PostgreSQL
+- Dosyalar: Azure Blob Storage
+- Gizli bilgiler: App Service Configuration veya Key Vault
 
-```text
-Areas/Admin/       Yönetici controller ve görünümleri
-Areas/Student/     Öğrenci controller ve görünümleri
-Areas/Identity/    Giriş ve hesap yönetimi
-Configuration/     E-posta, yükleme, hatırlatma ve seed ayarları
-Controllers/       Genel site controller'ları
-Data/              DbContext, seed işlemleri ve migration'lar
-Models/            Veritabanı ve form modelleri
-Services/          İş kuralları, dosya, e-posta, bildirim ve oyun servisleri
-Views/             Genel site görünümleri
-wwwroot/           CSS, JavaScript ve statik dosyalar
-app.db             SQLite veritabanı
-```
+Bu seçenekte SQLite yerine sunucu veritabanına ve yerel yüklemeler yerine Blob Storage'a geçiş gerekir. Buna karşılık yedekleme, ölçekleme ve veri kalıcılığı daha güvenli olur.
+
+Genel akış:
+
+1. Projeyi özel bir GitHub deposuna gönderin.
+2. Azure'da Linux tabanlı .NET 8 App Service oluşturun.
+3. Deployment Center'dan GitHub deposunu bağlayın.
+4. Veritabanı ve Blob Storage kaynaklarını oluşturun.
+5. Environment variable/secrets değerlerini Configuration ekranına girin.
+6. Alan adını bağlayın ve HTTPS'i zorunlu yapın.
+7. İlk deploy sonrasında migration ve giriş akışlarını doğrulayın.
+
+### 2. Daha kolay tek sunucu seçeneği: Ubuntu VPS
+
+Mevcut SQLite yapısını en az mimari değişiklikle kullanmak için küçük bir Ubuntu VPS uygundur:
+
+- Uygulama Kestrel üzerinde çalışır.
+- Nginx ters proxy ve HTTPS sağlar.
+- `app.db` ile tüm yüklemeler sunucudaki kalıcı `/var/lib/matematik-atolyesi` dizininde tutulur.
+- Uygulama `systemd` veya Docker Compose ile tek instance olarak çalıştırılır.
+
+Bu yöntem SQLite için uygundur; ancak sunucu güncellemesi, firewall, SSL, yedekleme ve izleme sorumluluğu size aittir.
+
+### 3. Kolay panel seçeneği: Render + Docker + Persistent Disk
+
+Render .NET uygulamasını Docker ile çalıştırabilir. Fakat servislerin varsayılan dosya sistemi geçicidir; SQLite ve yüklemeler için ücretli persistent disk gerekir. Disk bağlı servis tek instance çalışır ve disk yalnızca mount edilen dizini korur.
+
+Bu projede Render'a geçmeden önce:
+
+1. Depodaki hazır `Dockerfile` ile Render'da Docker Web Service oluşturun.
+2. Persistent Disk'i `/data` yoluna bağlayın.
+3. `ConnectionStrings__DefaultConnection` ve `Storage__RootPath` değerlerini `/data` altında tutun.
+4. Environment variables değerlerini girin.
+5. Health Check Path değerini `/health` yapın ve özel alan adını ayarlayın.
+
+Ücretsiz ve persistent disk bulunmayan bir serviste mevcut SQLite/yükleme yapısını kullanmayın; redeploy veya restart sonrasında veriler kaybolabilir.
+
+## Demo ders YouTube bağlantısı
+
+- `Herkese Açık`: Arama ve kanal üzerinden bulunabilir.
+- `Liste Dışı`: Yalnızca bağlantıyı bilenler izleyebilir; demo ders için genellikle en uygun seçenektir.
+- `Özel`: Yalnızca YouTube'da izin verilen Google hesapları izleyebilir. Siteye bağlantı eklemek tek başına erişim sağlamaz.
+
+## Güvenlik notları
+
+- Admin ve Student alanları rol bazlı yetkilendirme kullanır.
+- POST işlemlerinde antiforgery doğrulaması bulunur.
+- Parolalar ASP.NET Core Identity tarafından hash'lenir.
+- Başarısız girişlerde geçici hesap kilitleme uygulanır.
+- Öğrenciye özel sorgular oturumdaki kullanıcıyla sınırlandırılır.
+- Dosyanın uzantısı ve tarayıcıdan gelen MIME bilgisi kontrol edilmektedir; yüksek güvenlik gereken üretimde gerçek dosya imzası ve zararlı yazılım taraması da eklenmelidir.
 
 ## Sorun giderme
 
-### `dquote>` görünüyor
-
-Komuttaki çift tırnak kapanmamıştır. `Control + C` ile iptal edip komutu yeniden yazın.
-
-### `localhost` açılmıyor
-
-- Terminalde `dotnet run` işleminin çalıştığını kontrol edin.
-- Terminalde yazan gerçek adresi kullanın.
-- Varsayılan adres `http://localhost:5080` şeklindedir.
-- Port başka uygulama tarafından kullanılıyorsa eski `dotnet run` işlemini `Control + C` ile durdurun.
-
-### Değişiklik görünmüyor
-
-Çalışan uygulamayı durdurun ve tekrar başlatın:
+### Uygulama başlamıyor
 
 ```bash
-dotnet run
+dotnet restore
+dotnet build
+dotnet run --launch-profile http
 ```
 
-Gerekirse tarayıcıda zorla yenileme yapın: macOS için `Command + Shift + R`.
+Bağlantı dizesini, dosya yazma izinlerini, migration durumunu ve başlangıç seed loglarını kontrol edin.
 
 ### E-posta gitmiyor
 
-- SMTP sunucu ve portunu kontrol edin.
-- Gönderen e-posta adresini kontrol edin.
-- SSL ayarını kontrol edin.
-- Sağlayıcı uygulama parolası istiyorsa normal parola kullanmayın.
-- Yönetici panelindeki **E-posta Geçmişi** sayfasından hata metnini inceleyin.
+- SMTP sunucusu ve portunu kontrol edin.
+- Gönderen adresinin SMTP hesabıyla uyumlu olduğundan emin olun.
+- Sağlayıcı iki aşamalı doğrulama kullanıyorsa uygulama parolası oluşturun.
+- Yönetici panelindeki e-posta kayıtlarını kontrol edin.
 
-### Öğrenci giriş yapamıyor
+### Yüklenen dosya deploy sonrasında kayboluyor
 
-- Öğrenci için Identity hesabı oluşturulduğunu kontrol edin.
-- Öğrencinin aktif olduğunu kontrol edin.
-- Gerekirse öğrenci detayından şifreyi sıfırlayın.
-- Beş başarısız girişten sonra hesap 15 dakika kilitlenebilir.
+Platformun dosya sistemi geçicidir. Kalıcı disk bağlayın veya dosyaları nesne depolama servisine taşıyın.
 
-### Oyun hemen bitiyor veya soru görünmüyor
+### Migration çakışıyor
 
-- Uygulamayı güncel kodla yeniden başlatın.
-- Yeni bir oyun oturumu oluşturun.
-- Sınıf/konu seçimine uygun aktif soru bulunduğunu yönetici soru bankasından kontrol edin.
-- Hiç cevaplanmamış oturumlar boş sonuç olarak kaydedilmez.
+Migration dosyaları ile `ApplicationDbContextModelSnapshot.cs` dosyasının aynı modeli temsil ettiğini doğrulayın. Canlı veritabanını değiştirmeden önce yedek alın.
 
-### Derleme kontrolü
+## Lisans ve gizlilik
 
-```bash
-dotnet build --no-restore
-```
-
-Başarılı sonuçta `0 Hata` görünmelidir.
+Projede henüz açık kaynak lisansı tanımlanmamıştır. Öğrenci ve veli bilgileri kişisel veri içerdiği için depo özel tutulmalı; canlı veritabanı, yedekler ve yüklenen dosyalar herkese açık paylaşılmamalıdır.

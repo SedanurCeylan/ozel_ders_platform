@@ -27,8 +27,9 @@ public class SiteSettingsController(ApplicationDbContext dbContext) : Controller
         var setting = await dbContext.SiteSettings.SingleAsync();
         setting.SiteName = model.SiteName;
         setting.TeacherName = model.TeacherName;
-        setting.Email = model.Email;
-        setting.Phone = model.Phone;
+        setting.Email = model.Email?.Trim();
+        setting.Phone = model.Phone?.Trim();
+        setting.InstagramUrl = model.InstagramUrl?.Trim();
         setting.EmailJsServiceId = model.EmailJsServiceId;
         setting.EmailJsTemplateId = model.EmailJsTemplateId;
         setting.EmailJsPublicKey = model.EmailJsPublicKey;

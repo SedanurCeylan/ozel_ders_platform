@@ -3,10 +3,11 @@ using Microsoft.Extensions.Options;
 using OzelDersYonetim.Configuration;
 using OzelDersYonetim.Data;
 using OzelDersYonetim.Models.Documents;
+using OzelDersYonetim.Services;
 
 namespace OzelDersYonetim.Services.Documents;
 
-public class StudentDocumentService(ApplicationDbContext dbContext, IWebHostEnvironment environment, IOptions<FileUploadOptions> options) : IStudentDocumentService
+public class StudentDocumentService(ApplicationDbContext dbContext, StoragePathResolver storage, IOptions<FileUploadOptions> options) : IStudentDocumentService
 {
     private static readonly HashSet<string> Extensions = new(StringComparer.OrdinalIgnoreCase) { ".pdf", ".jpg", ".jpeg", ".png", ".docx" };
     private static readonly HashSet<string> MimeTypes = new(StringComparer.OrdinalIgnoreCase) { "application/pdf", "image/jpeg", "image/png", "application/vnd.openxmlformats-officedocument.wordprocessingml.document" };
@@ -17,7 +18,7 @@ public class StudentDocumentService(ApplicationDbContext dbContext, IWebHostEnvi
         if (!Extensions.Contains(extension) || !MimeTypes.Contains(file.ContentType)) throw new InvalidOperationException("Yalnızca PDF, JPG, JPEG, PNG veya DOCX dosyaları yüklenebilir.");
         if (file.Length <= 0 || file.Length > options.Value.MaximumSizeMb * 1024L * 1024L) throw new InvalidOperationException($"Dosya boyutu en fazla {options.Value.MaximumSizeMb} MB olabilir.");
         if (document.AccessType == DocumentAccessType.SelectedStudents && studentIds.Count == 0) throw new InvalidOperationException("Özel paylaşım için en az bir öğrenci seçin.");
-        var folder = Path.Combine(environment.ContentRootPath, "App_Data", "uploads", "documents"); Directory.CreateDirectory(folder);
+        var folder = storage.GetDirectory("documents");
         var storedName = $"{Guid.NewGuid():N}{extension.ToLowerInvariant()}";
         await using (var stream = File.Create(Path.Combine(folder, storedName))) await file.CopyToAsync(stream);
         document.OriginalFileName = Path.GetFileName(file.FileName); document.StoredFilePath = storedName; document.ContentType = file.ContentType; document.FileSize = file.Length; document.CreatedAt = DateTime.UtcNow;
@@ -34,7 +35,7 @@ public class StudentDocumentService(ApplicationDbContext dbContext, IWebHostEnvi
         var tracking = document.StudentDocuments.SingleOrDefault(x => x.StudentProfileId == student.Id);
         if (tracking is null) { tracking = new StudentDocument { CourseDocumentId = document.Id, StudentProfileId = student.Id }; dbContext.StudentDocuments.Add(tracking); }
         tracking.IsViewed = tracking.IsDownloaded = true; tracking.ViewedAt ??= DateTime.UtcNow; tracking.DownloadedAt = DateTime.UtcNow; await dbContext.SaveChangesAsync();
-        var path = Path.Combine(environment.ContentRootPath, "App_Data", "uploads", "documents", document.StoredFilePath); if (!File.Exists(path)) return null;
+        var path = storage.ResolveStoredFile(document.StoredFilePath, "documents"); if (path is null || !File.Exists(path)) return null;
         return (File.OpenRead(path), document.ContentType, document.OriginalFileName);
     }
 }

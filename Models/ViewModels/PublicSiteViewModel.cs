@@ -11,6 +11,7 @@ public class PublicSiteViewModel
     public IReadOnlyList<CourseDocument> PublicDocuments { get; set; } = Array.Empty<CourseDocument>();
     public DailyFact? DailyFact { get; set; }
     public IReadOnlyList<StudentTestimonial> StudentTestimonials { get; set; } = Array.Empty<StudentTestimonial>();
+    public IReadOnlyList<ContentSection> ClassContents { get; set; } = Array.Empty<ContentSection>();
     public ContentSection? Find(string key) => Sections.FirstOrDefault(x => x.SectionKey == key);
     public IReadOnlyList<ContentSection> Items(string prefix) => Sections.Where(x => x.SectionKey.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).OrderBy(x => x.DisplayOrder).ToList();
 }

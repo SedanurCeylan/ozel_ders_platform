@@ -12,7 +12,7 @@ using OzelDersYonetim.Services.Notifications;
 namespace OzelDersYonetim.Areas.Admin.Controllers;
 
 [Area("Admin"), Authorize(Roles = IdentityDataSeeder.AdminRole)]
-public class AssignmentsController(ApplicationDbContext dbContext, IAssignmentService assignmentService, IAuditService audit, INotificationService notifications, IEmailService emails, IEmailTemplateService templates) : Controller
+public class AssignmentsController(ApplicationDbContext dbContext, IAssignmentService assignmentService, AssignmentFileService assignmentFiles, IAuditService audit, INotificationService notifications, IEmailService emails, IEmailTemplateService templates) : Controller
 {
     public async Task<IActionResult> Index(string? scope)
     {
@@ -26,6 +26,24 @@ public class AssignmentsController(ApplicationDbContext dbContext, IAssignmentSe
     {
         var item = await dbContext.Assignments.AsNoTracking().Include(x => x.StudentAssignments).ThenInclude(x => x.StudentProfile).Include(x => x.StudentAssignments).ThenInclude(x => x.Submissions).SingleOrDefaultAsync(x => x.Id == id);
         return item is null ? NotFound() : View(item);
+    }
+
+    public async Task<IActionResult> DownloadAttachment(int id)
+    {
+        var item = await dbContext.Assignments.AsNoTracking().SingleOrDefaultAsync(x => x.Id == id);
+        if (item?.AttachmentPath is null) return NotFound();
+        var file = assignmentFiles.Open(item.AttachmentPath, item.Id);
+        return file is null ? NotFound() : File(file.Value.Stream, file.Value.ContentType, "odev-eki" + Path.GetExtension(item.AttachmentPath));
+    }
+
+    public async Task<IActionResult> DownloadSubmission(int id)
+    {
+        var item = await dbContext.AssignmentSubmissions.AsNoTracking()
+            .Include(x => x.StudentAssignment)
+            .SingleOrDefaultAsync(x => x.Id == id);
+        if (item?.FilePath is null) return NotFound();
+        var file = assignmentFiles.Open(item.FilePath, item.StudentAssignment.AssignmentId, item.StudentAssignment.StudentProfileId);
+        return file is null ? NotFound() : File(file.Value.Stream, file.Value.ContentType, item.FileName ?? "ogrenci-teslimi" + Path.GetExtension(item.FilePath));
     }
 
     public async Task<IActionResult> Create() => View(await FormAsync(new AssignmentFormViewModel()));

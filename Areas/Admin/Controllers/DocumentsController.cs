@@ -6,17 +6,18 @@ using OzelDersYonetim.Data;
 using OzelDersYonetim.Models.ViewModels;
 using OzelDersYonetim.Services.Documents;
 using OzelDersYonetim.Services.Auditing;
+using OzelDersYonetim.Services;
 
 namespace OzelDersYonetim.Areas.Admin.Controllers;
 
 [Area("Admin"), Authorize(Roles = IdentityDataSeeder.AdminRole)]
-public class DocumentsController(ApplicationDbContext dbContext, IStudentDocumentService documentService, IWebHostEnvironment environment, IAuditService audit) : Controller
+public class DocumentsController(ApplicationDbContext dbContext, IStudentDocumentService documentService, StoragePathResolver storage, IAuditService audit) : Controller
 {
-    public async Task<IActionResult> Index(string? category)
+    public async Task<IActionResult> Index(string? category, bool shared = false, int? sharedId = null)
     {
         var query = dbContext.CourseDocuments.AsNoTracking().Include(x => x.StudentDocuments).OrderByDescending(x => x.CreatedAt).AsQueryable();
         if (!string.IsNullOrWhiteSpace(category)) query = query.Where(x => x.Category == category);
-        ViewBag.Category = category; ViewBag.Categories = await dbContext.CourseDocuments.Select(x => x.Category).Distinct().OrderBy(x => x).ToListAsync();
+        ViewBag.Category = category; ViewBag.Categories = await dbContext.CourseDocuments.Select(x => x.Category).Distinct().OrderBy(x => x).ToListAsync(); ViewBag.DocumentShared = shared; ViewBag.SharedDocumentId = sharedId;
         return View(await query.ToListAsync());
     }
     public async Task<IActionResult> Create() => View(await FormAsync(new DocumentFormViewModel()));
@@ -30,7 +31,7 @@ public class DocumentsController(ApplicationDbContext dbContext, IStudentDocumen
         try { await documentService.CreateAsync(model.Document, model.File!, model.SelectedStudentIds); }
         catch (InvalidOperationException ex) { ModelState.AddModelError(string.Empty, ex.Message); return View(await FormAsync(model)); }
         await audit.LogAsync("Doküman yükleme", "Doküman", model.Document.Id, model.Document.Title);
-        TempData["Success"] = "Doküman başarıyla paylaşıldı."; return RedirectToAction(nameof(Index));
+        TempData["Success"] = "Doküman başarıyla paylaşıldı."; return RedirectToAction(nameof(Index), new { shared = true, sharedId = model.Document.Id });
     }
 
     [HttpPost,ValidateAntiForgeryToken]
@@ -44,7 +45,7 @@ public class DocumentsController(ApplicationDbContext dbContext, IStudentDocumen
     public async Task<IActionResult> Download(int id)
     {
         var document = await dbContext.CourseDocuments.FindAsync(id); if (document is null) return NotFound();
-        var path = Path.Combine(environment.ContentRootPath, "App_Data", "uploads", "documents", document.StoredFilePath); if (!System.IO.File.Exists(path)) return NotFound();
+        var path = storage.ResolveStoredFile(document.StoredFilePath, "documents"); if (path is null || !System.IO.File.Exists(path)) return NotFound();
         return File(System.IO.File.OpenRead(path), document.ContentType, document.OriginalFileName);
     }
 

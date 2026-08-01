@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using OzelDersYonetim.Data;
 using OzelDersYonetim.Models.Documents;
 using OzelDersYonetim.Models.ViewModels;
+using OzelDersYonetim.Services;
 
 namespace OzelDersYonetim.Controllers;
 
-public class DiscoveryController(ApplicationDbContext db,IWebHostEnvironment environment):Controller
+public class DiscoveryController(ApplicationDbContext db,StoragePathResolver storage):Controller
 {
     [Route("demo-dersler")]
     public async Task<IActionResult> DemoLessons()
@@ -33,7 +34,7 @@ public class DiscoveryController(ApplicationDbContext db,IWebHostEnvironment env
     public async Task<IActionResult> Download(int id)
     {
         var item=await db.CourseDocuments.AsNoTracking().SingleOrDefaultAsync(x=>x.Id==id&&x.IsActive&&x.AccessType==DocumentAccessType.Public);if(item is null)return NotFound();
-        var path=Path.Combine(environment.ContentRootPath,"App_Data","uploads","documents",item.StoredFilePath);if(!System.IO.File.Exists(path))return NotFound();return File(System.IO.File.OpenRead(path),item.ContentType,item.OriginalFileName);
+        var path=storage.ResolveStoredFile(item.StoredFilePath,"documents");if(path is null||!System.IO.File.Exists(path))return NotFound();return File(System.IO.File.OpenRead(path),item.ContentType,item.OriginalFileName);
     }
 
     private async Task<PublicCollectionViewModel> Collection(string prefix,string title,string description)=>new(){Title=title,Description=description,Items=await db.ContentSections.AsNoTracking().Where(x=>x.PageKey=="Home"&&x.IsActive&&x.SectionKey.StartsWith(prefix)).OrderBy(x=>x.DisplayOrder).ToListAsync()};

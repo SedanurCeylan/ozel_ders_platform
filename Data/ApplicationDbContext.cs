@@ -57,6 +57,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
             .IsUnique();
 
         builder.Entity<StudentTestimonial>().HasIndex(x=>x.StudentProfileId).IsUnique();
+        builder.Entity<StudentTestimonial>().HasQueryFilter(x => !x.StudentProfile.IsDeleted);
         builder.Entity<StudentTestimonial>().HasOne(x=>x.StudentProfile).WithMany().HasForeignKey(x=>x.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<StudentProfile>()
@@ -78,23 +79,32 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
         builder.Entity<StudentLesson>().HasOne(item => item.StudentProfile).WithMany(item => item.StudentLessons).HasForeignKey(item => item.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
 
         builder.Entity<StudentAssignment>().HasIndex(item => new { item.AssignmentId, item.StudentProfileId }).IsUnique();
+        builder.Entity<StudentAssignment>().HasQueryFilter(item => !item.StudentProfile.IsDeleted);
         builder.Entity<StudentAssignment>().HasOne(item => item.Assignment).WithMany(item => item.StudentAssignments).HasForeignKey(item => item.AssignmentId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<StudentAssignment>().HasOne(item => item.StudentProfile).WithMany(item => item.StudentAssignments).HasForeignKey(item => item.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<AssignmentSubmission>().HasOne(item => item.StudentAssignment).WithMany(item => item.Submissions).HasForeignKey(item => item.StudentAssignmentId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<AssignmentSubmission>().HasQueryFilter(item => !item.StudentAssignment.StudentProfile.IsDeleted);
         builder.Entity<StudentDocument>().HasIndex(item => new { item.CourseDocumentId, item.StudentProfileId }).IsUnique();
+        builder.Entity<StudentDocument>().HasQueryFilter(item => !item.StudentProfile.IsDeleted);
         builder.Entity<StudentDocument>().HasOne(item => item.CourseDocument).WithMany(item => item.StudentDocuments).HasForeignKey(item => item.CourseDocumentId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<StudentDocument>().HasOne(item => item.StudentProfile).WithMany(item => item.StudentDocuments).HasForeignKey(item => item.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<ExamResult>().HasOne(item => item.StudentProfile).WithMany(item => item.ExamResults).HasForeignKey(item => item.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<ExamResult>().HasQueryFilter(item => !item.StudentProfile.IsDeleted);
         builder.Entity<StudentProgress>().HasOne(item => item.StudentProfile).WithMany(item => item.ProgressRecords).HasForeignKey(item => item.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<StudentProgress>().HasQueryFilter(item => !item.StudentProfile.IsDeleted);
         builder.Entity<TeacherStudentNote>().HasOne(item => item.StudentProfile).WithMany(item => item.TeacherNotes).HasForeignKey(item => item.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<TeacherStudentNote>().HasQueryFilter(item => !item.StudentProfile.IsDeleted);
         builder.Entity<AnnouncementStudent>().HasIndex(x => new { x.AnnouncementId, x.StudentProfileId }).IsUnique();
+        builder.Entity<AnnouncementStudent>().HasQueryFilter(x => !x.StudentProfile.IsDeleted);
         builder.Entity<AnnouncementStudent>().HasOne(x => x.Announcement).WithMany(x => x.AnnouncementStudents).HasForeignKey(x => x.AnnouncementId).OnDelete(DeleteBehavior.Cascade);
         builder.Entity<AnnouncementStudent>().HasOne(x => x.StudentProfile).WithMany(x => x.AnnouncementStudents).HasForeignKey(x => x.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
         builder.Entity<UserNotification>().HasOne(x => x.ApplicationUser).WithMany(x => x.Notifications).HasForeignKey(x => x.ApplicationUserId).OnDelete(DeleteBehavior.Cascade);
         builder.Entity<ReminderDispatch>().HasIndex(x => new { x.ReminderType, x.EntityType, x.EntityId, x.ApplicationUserId }).IsUnique();
         builder.Entity<GameQuestionOption>().HasOne(x => x.GameQuestion).WithMany(x => x.Options).HasForeignKey(x => x.GameQuestionId).OnDelete(DeleteBehavior.Cascade);
         builder.Entity<GameSession>().HasOne(x => x.StudentProfile).WithMany().HasForeignKey(x => x.StudentProfileId).OnDelete(DeleteBehavior.Restrict);
+        builder.Entity<GameSession>().HasQueryFilter(x => x.StudentProfile == null || !x.StudentProfile.IsDeleted);
         builder.Entity<GameAnswer>().HasIndex(x => new { x.GameSessionId, x.GameQuestionId }).IsUnique();
+        builder.Entity<GameAnswer>().HasQueryFilter(x => x.GameSession.StudentProfile == null || !x.GameSession.StudentProfile.IsDeleted);
         builder.Entity<GameAnswer>().HasOne(x => x.GameSession).WithMany(x => x.Answers).HasForeignKey(x => x.GameSessionId).OnDelete(DeleteBehavior.Cascade);
         builder.Entity<GameAnswer>().HasOne(x => x.GameQuestion).WithMany().HasForeignKey(x => x.GameQuestionId).OnDelete(DeleteBehavior.Restrict);
     }

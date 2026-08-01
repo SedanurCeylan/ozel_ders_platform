@@ -1,0 +1,13 @@
+.git
+.gitignore
+.vs
+.vscode
+bin
+obj
+publish
+app.db
+app.db-shm
+app.db-wal
+App_Data
+wwwroot/uploads
+README.md

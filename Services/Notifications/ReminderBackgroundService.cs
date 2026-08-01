@@ -13,9 +13,21 @@ public class ReminderBackgroundService(IServiceScopeFactory scopeFactory, IOptio
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         if (!options.Value.Enabled) return;
-        await Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
-        using var timer = new PeriodicTimer(TimeSpan.FromMinutes(Math.Max(1, options.Value.CheckIntervalMinutes)));
-        do { try { await CheckAsync(stoppingToken); } catch (Exception ex) { logger.LogError(ex,"Hatırlatma kontrolü tamamlanamadı."); } } while (await timer.WaitForNextTickAsync(stoppingToken));
+        try
+        {
+            await Task.Delay(TimeSpan.FromSeconds(20), stoppingToken);
+            using var timer = new PeriodicTimer(TimeSpan.FromMinutes(Math.Max(1, options.Value.CheckIntervalMinutes)));
+            do
+            {
+                try { await CheckAsync(stoppingToken); }
+                catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested) { break; }
+                catch (Exception ex) { logger.LogError(ex,"Hatırlatma kontrolü tamamlanamadı."); }
+            } while (await timer.WaitForNextTickAsync(stoppingToken));
+        }
+        catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
+        {
+            // Normal application shutdown.
+        }
     }
 
     private async Task CheckAsync(CancellationToken token)
