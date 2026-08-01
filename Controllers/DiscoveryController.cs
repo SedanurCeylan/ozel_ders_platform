@@ -12,7 +12,6 @@ public class DiscoveryController(ApplicationDbContext db,StoragePathResolver sto
     [Route("demo-dersler")]
     public async Task<IActionResult> DemoLessons()
     {
-        if (!await SectionIsActive("section-demo")) return NotFound();
         return View("DemoLessons",await Collection("demo-","Demo Dersler","Öğretmenin anlatım tarzını ve soru çözme yaklaşımını ücretsiz demo derslerle keşfedin."));
     }
 

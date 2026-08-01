@@ -5,7 +5,6 @@
         .Where(x => x.PageKey == "Home" && x.IsActive && (x.SectionKey == "section-demo" || x.SectionKey == "section-content"))
         .Select(x => x.SectionKey)
         .ToListAsync();
-    var demoSectionIsActive = visibleDiscoverySections.Contains("section-demo");
     var contentSectionIsActive = visibleDiscoverySections.Contains("section-content");
     var layoutSettings = await LayoutDb.SiteSettings.AsNoTracking().SingleAsync();
     var footerContent = await LayoutDb.ContentSections.AsNoTracking().SingleOrDefaultAsync(x => x.PageKey == "Home" && x.SectionKey == "homeui-footer" && x.IsActive);
@@ -54,7 +53,7 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="SecondaryEducation">Sınıflar</a>
                         </li>
-                        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Keşfet</a><ul class="dropdown-menu"><li><a class="dropdown-item" asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a></li>@if(demoSectionIsActive){<li><a class="dropdown-item" asp-controller="Discovery" asp-action="DemoLessons">Demo Dersler</a></li>}@if(contentSectionIsActive){<li><a class="dropdown-item" asp-controller="Discovery" asp-action="Content">Matematik İçerikleri</a></li>}<li><a class="dropdown-item" asp-controller="Discovery" asp-action="Documents">Ücretsiz Dokümanlar</a></li><li><a class="dropdown-item" asp-controller="LevelTest" asp-action="Index">Mini Seviye Testi</a></li></ul></li>
+                        <li class="nav-item dropdown"><a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">Keşfet</a><ul class="dropdown-menu"><li><a class="dropdown-item" asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a></li><li><a class="dropdown-item" asp-controller="Discovery" asp-action="DemoLessons">Demo Dersler</a></li>@if(contentSectionIsActive){<li><a class="dropdown-item" asp-controller="Discovery" asp-action="Content">Matematik İçerikleri</a></li>}<li><a class="dropdown-item" asp-controller="Discovery" asp-action="Documents">Ücretsiz Dokümanlar</a></li><li><a class="dropdown-item" asp-controller="LevelTest" asp-action="Index">Mini Seviye Testi</a></li></ul></li>
                         <li class="nav-item">
                             <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index" asp-fragment="iletisim">İletişim</a>
                         </li>
@@ -92,7 +91,7 @@
                 </div>
             </div>
             <nav class="footer-column" aria-label="Footer hızlı bağlantılar"><strong>Hızlı Bağlantılar</strong><a asp-controller="Home" asp-action="About">Hakkımda</a><a asp-controller="Home" asp-action="Trainings">Eğitimler</a><a asp-controller="Home" asp-action="SecondaryEducation">Sınıflar</a><a asp-controller="Home" asp-action="Index" asp-fragment="iletisim">İletişim</a></nav>
-            <nav class="footer-column" aria-label="Footer keşfet bağlantıları"><strong>Keşfet</strong><a asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a><a asp-controller="Discovery" asp-action="Content">Ücretsiz İçerikler</a><a asp-controller="Discovery" asp-action="Documents">Dokümanlar</a><a asp-controller="LevelTest" asp-action="Index">Mini Seviye Testi</a></nav>
+            <nav class="footer-column" aria-label="Footer keşfet bağlantıları"><strong>Keşfet</strong><a asp-controller="Discovery" asp-action="DemoLessons">Demo Dersler</a><a asp-area="" asp-controller="Games" asp-action="Index">Matematik Oyunları</a><a asp-controller="Discovery" asp-action="Content">Ücretsiz İçerikler</a><a asp-controller="Discovery" asp-action="Documents">Dokümanlar</a><a asp-controller="LevelTest" asp-action="Index">Mini Seviye Testi</a></nav>
             <div class="footer-column footer-contact"><strong>İletişim</strong>@if(!string.IsNullOrWhiteSpace(layoutSettings.Email)){<a href="mailto:@layoutSettings.Email">@layoutSettings.Email</a>}@if(!string.IsNullOrWhiteSpace(layoutSettings.Phone)){<a href="tel:@layoutSettings.Phone">@layoutSettings.Phone</a>}<span>5–8. sınıf matematik</span><a asp-area="Identity" asp-page="/Account/Login">Öğrenci Girişi →</a></div>
         </div>
         <div class="container footer-bottom"><p>© @DateTime.Today.Year @layoutSettings.SiteName. Tüm hakları saklıdır.</p><div><a asp-controller="Home" asp-action="About">Gizlilik</a><a asp-controller="Home" asp-action="About">KVKK</a><span>@(footerContent?.Title??"Matematiği keşfet · çöz · ilerle")</span></div></div>
