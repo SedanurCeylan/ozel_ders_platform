@@ -1,0 +1,6 @@
+@model PublicArticleViewModel
+@{ViewData["Title"]=Model.Article.Title;}
+<article class="math-article-page">
+    <header class="math-article-hero"><div class="container"><a asp-action="Content">← Matematik içeriklerine dön</a><span>@(Model.Article.Subtitle??"Matematik Keşfi")</span><h1>@Model.Article.Title</h1><p>@Model.Article.Content</p><small>Yaklaşık 3 dakika · Oku, düşün, uygula</small></div></header>
+    <div class="container math-article-layout"><main><div class="article-lead"><b>✦</b><p>Matematikte kalıcı öğrenme, işlemi ezberlemekten çok nedenini anlamakla başlar. Aşağıdaki küçük adımları kendi çalışmalarında hemen uygulayabilirsin.</p></div>@foreach(var articlePart in Model.Sections){<section><h2>@articlePart.Heading</h2><p>@articlePart.Body</p></section>}<aside><strong>Küçük uygulama</strong><p>Bu yazıdan öğrendiğin bir fikri seç ve bugün çözdüğün ilk soruda kullan. Çözümünün yanına hangi adımı uyguladığını tek cümleyle not et.</p></aside></main><nav><strong>Diğer içerikler</strong>@foreach(var related in Model.RelatedArticles){<a asp-action="Article" asp-route-key="@related.SectionKey"><small>@related.Subtitle</small><span>@related.Title</span>→</a>}</nav></div>
+</article>

@@ -12,6 +12,13 @@ public class PublicCollectionViewModel
     public IReadOnlyList<CourseDocument> Documents { get; set; } = Array.Empty<CourseDocument>();
 }
 
+public class PublicArticleViewModel
+{
+    public ContentSection Article { get; set; } = new();
+    public IReadOnlyList<(string Heading, string Body)> Sections { get; set; } = Array.Empty<(string, string)>();
+    public IReadOnlyList<ContentSection> RelatedArticles { get; set; } = Array.Empty<ContentSection>();
+}
+
 public class LevelTestViewModel
 {
     public string Token { get; set; } = string.Empty;
