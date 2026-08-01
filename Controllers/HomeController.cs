@@ -26,13 +26,15 @@ public class HomeController : Controller
     public async Task<IActionResult> Index()
     {
         var model = await PageAsync("Home");
+        var istanbulNow = TimeZoneInfo.ConvertTimeBySystemTimeZoneId(DateTimeOffset.UtcNow, "Europe/Istanbul");
+        model.LocalToday = DateOnly.FromDateTime(istanbulNow.DateTime);
         model.ClassContents = await _dbContext.ContentSections.AsNoTracking().Where(x=>x.PageKey=="SecondaryEducation"&&x.SectionKey.StartsWith("grade")&&x.IsActive).OrderBy(x=>x.DisplayOrder).Take(4).ToListAsync();
         model.PublicDocuments = await _dbContext.CourseDocuments.AsNoTracking().Where(x => x.IsActive && x.AccessType == DocumentAccessType.Public).OrderByDescending(x => x.CreatedAt).Take(6).ToListAsync();
         model.StudentTestimonials = await _dbContext.StudentTestimonials.AsNoTracking().Include(x=>x.StudentProfile).Where(x=>x.IsActive&&x.StudentProfile.IsActive).OrderByDescending(x=>x.UpdatedAt).Take(6).ToListAsync();
         var dailyFacts = await _dbContext.DailyFacts.AsNoTracking().Where(x=>x.IsActive).OrderBy(x=>x.DisplayOrder).ThenBy(x=>x.Id).ToListAsync();
         if(dailyFacts.Count>0)
         {
-            var dayNumber=DateOnly.FromDateTime(DateTime.Today).DayNumber;
+            var dayNumber=model.LocalToday.DayNumber;
             model.DailyFact=dailyFacts[dayNumber%dailyFacts.Count];
         }
         return View(model);

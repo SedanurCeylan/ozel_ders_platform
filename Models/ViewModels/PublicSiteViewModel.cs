@@ -10,6 +10,7 @@ public class PublicSiteViewModel
     public IReadOnlyList<ContentSection> Sections { get; set; } = Array.Empty<ContentSection>();
     public IReadOnlyList<CourseDocument> PublicDocuments { get; set; } = Array.Empty<CourseDocument>();
     public DailyFact? DailyFact { get; set; }
+    public DateOnly LocalToday { get; set; } = DateOnly.FromDateTime(DateTime.Today);
     public IReadOnlyList<StudentTestimonial> StudentTestimonials { get; set; } = Array.Empty<StudentTestimonial>();
     public IReadOnlyList<ContentSection> ClassContents { get; set; } = Array.Empty<ContentSection>();
     public ContentSection? Find(string key) => Sections.FirstOrDefault(x => x.SectionKey == key);
