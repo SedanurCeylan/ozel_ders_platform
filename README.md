@@ -232,6 +232,8 @@ Bu projede Render'a geçmeden önce:
 
 Ücretsiz ve persistent disk bulunmayan bir serviste mevcut SQLite/yükleme yapısını kullanmayın; redeploy veya restart sonrasında veriler kaybolabilir.
 
+Demo amacıyla depodaki `render.yaml` Blueprint'i kullanılabilir. Bu tanım ücretsiz instance, `/health` kontrolü ve geçici `/tmp` depolamasını otomatik ayarlar. Blueprint kurulurken `AdminSeed__Email` ve `AdminSeed__Password` değerleri Render ekranında secret olarak girilir. Ücretsiz demo servisindeki veriler restart veya deploy sonrasında sıfırlanabilir.
+
 ## Demo ders YouTube bağlantısı
 
 - `Herkese Açık`: Arama ve kanal üzerinden bulunabilir.

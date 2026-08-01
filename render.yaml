@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: matematik-atolyesi-demo
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: ASPNETCORE_URLS
+        value: http://+:8080
+      - key: ConnectionStrings__DefaultConnection
+        value: Data Source=/tmp/app.db;Cache=Shared
+      - key: Storage__RootPath
+        value: /tmp/uploads
+      - key: Reminders__Enabled
+        value: "false"
+      - key: AdminSeed__Email
+        sync: false
+      - key: AdminSeed__Password
+        sync: false
