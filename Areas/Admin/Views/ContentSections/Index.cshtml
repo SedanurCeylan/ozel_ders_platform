@@ -14,6 +14,7 @@
 {
     <div class="page-heading simple-home-heading"><div><span>Ana sayfa haritası</span><h1>Ana Sayfada Neler Gösterilsin?</h1><p>Aşağıdaki kartlar ana sayfada yukarıdan aşağıya göründükleri sıradadır.</p></div><a class="admin-btn" asp-area="" asp-controller="Home" asp-action="Index" target="_blank">Ana Sayfayı Gör ↗</a></div>
     <div class="home-sections-help"><span>i</span><p><strong>Kullanımı çok basit:</strong> “Ana sayfada gizle” yalnızca o alanı ziyaretçiden saklar, bilgileri silmez. “İçeriğini yönet” ise o bölüme ait doğru düzenleme ekranını açar.</p></div>
+    <div class="home-component-shortcuts"><a asp-action="Index" asp-route-page="Home" asp-route-category="interactive"><b>⚙</b><span><strong>Tüm Ana Sayfa Bileşenleri</strong><small>Butonlar, güven rozetleri, mini görev, oyun kartları ve footer metni</small></span>→</a><a asp-action="Index" asp-route-page="Home" asp-route-contentType="items"><b>≡</b><span><strong>Tüm Alt İçerikler</strong><small>Ana sayfada kullanılan bütün kart ve metin kayıtlarını eksiksiz görüntüle</small></span>→</a></div>
     <div class="home-section-admin-grid">
     @foreach(var item in Model)
     {
@@ -32,7 +33,7 @@
                 case "section-programs":<a asp-action="Index" asp-route-page="Home" asp-route-category="programs">Programları yönet →</a>break;
                 case "section-content":<a asp-action="Index" asp-route-page="Home" asp-route-category="articles">Yazıları yönet →</a>break;
                 case "section-daily":<a asp-controller="DailyFacts" asp-action="Index">Günün bilgilerini yönet →</a>break;
-                case "section-games":<a asp-controller="Games" asp-action="Questions">Oyun sorularını yönet →</a>break;
+                case "section-games":<a asp-action="Index" asp-route-page="Home" asp-route-category="homegames">Ana sayfa oyun kartlarını yönet →</a>break;
                 case "section-documents":<a asp-controller="Documents" asp-action="Index">Dokümanları yönet →</a>break;
                 case "section-process":<a asp-action="Index" asp-route-page="Home" asp-route-category="process">Ders sürecini yönet →</a>break;
                 case "section-tracking":<a asp-action="Index" asp-route-page="Home" asp-route-category="tracking">Tanıtımı yönet →</a>break;
