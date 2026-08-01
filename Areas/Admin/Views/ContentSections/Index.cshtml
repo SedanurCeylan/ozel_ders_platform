@@ -14,6 +14,26 @@
 {
     <div class="page-heading simple-home-heading"><div><span>Ana sayfa haritası</span><h1>Ana Sayfada Neler Gösterilsin?</h1><p>Aşağıdaki kartlar ana sayfada yukarıdan aşağıya göründükleri sıradadır.</p></div><a class="admin-btn" asp-area="" asp-controller="Home" asp-action="Index" target="_blank">Ana Sayfayı Gör ↗</a></div>
     <div class="home-sections-help"><span>i</span><p><strong>Kullanımı çok basit:</strong> “Ana sayfada gizle” yalnızca o alanı ziyaretçiden saklar, bilgileri silmez. “İçeriğini yönet” ise o bölüme ait doğru düzenleme ekranını açar.</p></div>
+    <section class="home-content-center">
+        <div class="home-content-center-head"><span>İÇERİK YÖNETİM MERKEZİ</span><h2>Ana sayfadaki bütün içerikler</h2><p>Yorumlar, demo ders, oyunlar ve diğer kartlara doğrudan buradan ulaşabilirsiniz.</p></div>
+        <div class="home-content-center-grid">
+            <a asp-controller="HomeHero" asp-action="Index"><b>⌂</b><span><strong>Karşılama Alanı</strong><small>Ana başlık ve mini görev</small></span></a>
+            <a asp-controller="TeacherProfile" asp-action="Index"><b>♙</b><span><strong>Öğretmen Tanıtımı</strong><small>Profil bilgileri</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="demo"><b>▶</b><span><strong>Demo Dersler</strong><small>Video ve bağlantısı</small></span></a>
+            <a asp-controller="ClassContents" asp-action="Index"><b>5–8</b><span><strong>Sınıf İçerikleri</strong><small>Sınıflar ve konular</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="programs"><b>▦</b><span><strong>Program Kartları</strong><small>Eğitim programları</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="articles"><b>✦</b><span><strong>İlgi Çekici İçerikler</strong><small>Ana sayfa yazıları</small></span></a>
+            <a asp-controller="DailyFacts" asp-action="Index"><b>π</b><span><strong>Günün Bilgisi</strong><small>Matematik bilgileri</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="homegames"><b>◆</b><span><strong>Oyun Kartları</strong><small>Oyun tanıtımları</small></span></a>
+            <a asp-controller="Documents" asp-action="Index"><b>▤</b><span><strong>Ücretsiz Dokümanlar</strong><small>Yayınlanan dosyalar</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="process"><b>→</b><span><strong>Ders Süreci</strong><small>İlerleme adımları</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="tracking"><b>✓</b><span><strong>Takip Sistemi</strong><small>Panel tanıtımları</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="statistics"><b>↗</b><span><strong>İstatistikler</strong><small>Başarı kartları</small></span></a>
+            <a class="testimonial-center-link" asp-controller="Testimonials" asp-action="Index"><b>★</b><span><strong>Öğrenci Yorumları</strong><small>Onayla, yayınla veya gizle</small></span><i>YÖNET</i></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="faq"><b>?</b><span><strong>Sık Sorulan Sorular</strong><small>Soru ve cevaplar</small></span></a>
+            <a asp-action="Index" asp-route-page="Home" asp-route-category="interactive"><b>⚙</b><span><strong>Diğer Bileşenler</strong><small>Butonlar, rozetler ve footer</small></span></a>
+        </div>
+    </section>
     <div class="home-component-shortcuts"><a asp-action="Index" asp-route-page="Home" asp-route-category="interactive"><b>⚙</b><span><strong>Tüm Ana Sayfa Bileşenleri</strong><small>Butonlar, güven rozetleri, mini görev, oyun kartları ve footer metni</small></span>→</a><a asp-action="Index" asp-route-page="Home" asp-route-contentType="items"><b>≡</b><span><strong>Tüm Alt İçerikler</strong><small>Ana sayfada kullanılan bütün kart ve metin kayıtlarını eksiksiz görüntüle</small></span>→</a></div>
     <div class="home-section-admin-grid">
     @foreach(var item in Model)
